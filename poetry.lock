@@ -223,9 +223,6 @@ files = [
     {file = "Babel-2.12.1.tar.gz", hash = "sha256:cc2d99999cd01d44420ae725a21c9e3711b3aadc7976d6147f622d8581963455"},
 ]
 
-[package.dependencies]
-pytz = {version = ">=2015.7", markers = "python_version < \"3.9\""}
-
 [[package]]
 name = "backcall"
 version = "0.2.0"
@@ -294,6 +291,28 @@ webencodings = "*"
 
 [package.extras]
 css = ["tinycss2 (>=1.1.0,<1.2)"]
+
+[[package]]
+name = "bokeh"
+version = "3.3.4"
+description = "Interactive plots and applications in the browser from Python"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "bokeh-3.3.4-py3-none-any.whl", hash = "sha256:ad7b6f89d0a7c2be01eff1db0ca24e2755ac41de14539db919a62e791809c309"},
+    {file = "bokeh-3.3.4.tar.gz", hash = "sha256:73b7982dc2b8df15bf660cdddc8d3825e829195c438015a5d09824f1a7028368"},
+]
+
+[package.dependencies]
+contourpy = ">=1"
+Jinja2 = ">=2.9"
+numpy = ">=1.16"
+packaging = ">=16.8"
+pandas = ">=1.2"
+pillow = ">=7.1.0"
+PyYAML = ">=3.10"
+tornado = ">=5.1"
+xyzservices = ">=2021.09.1"
 
 [[package]]
 name = "build"
@@ -1644,11 +1663,9 @@ files = [
 attrs = ">=22.2.0"
 fqdn = {version = "*", optional = true, markers = "extra == \"format-nongpl\""}
 idna = {version = "*", optional = true, markers = "extra == \"format-nongpl\""}
-importlib-resources = {version = ">=1.4.0", markers = "python_version < \"3.9\""}
 isoduration = {version = "*", optional = true, markers = "extra == \"format-nongpl\""}
 jsonpointer = {version = ">1.13", optional = true, markers = "extra == \"format-nongpl\""}
 jsonschema-specifications = ">=2023.03.6"
-pkgutil-resolve-name = {version = ">=1.3.10", markers = "python_version < \"3.9\""}
 referencing = ">=0.28.4"
 rfc3339-validator = {version = "*", optional = true, markers = "extra == \"format-nongpl\""}
 rfc3986-validator = {version = ">0.1.0", optional = true, markers = "extra == \"format-nongpl\""}
@@ -1672,7 +1689,6 @@ files = [
 ]
 
 [package.dependencies]
-importlib-resources = {version = ">=1.4.0", markers = "python_version < \"3.9\""}
 referencing = ">=0.28.0"
 
 [[package]]
@@ -1827,7 +1843,6 @@ files = [
 [package.dependencies]
 async-lru = ">=1.0.0"
 importlib-metadata = {version = ">=4.8.3", markers = "python_version < \"3.10\""}
-importlib-resources = {version = ">=1.4", markers = "python_version < \"3.9\""}
 ipykernel = "*"
 jinja2 = ">=3.0.3"
 jupyter-core = "*"
@@ -1896,7 +1911,6 @@ files = [
 
 [package.dependencies]
 importlib-metadata = {version = ">=4.11.4", markers = "python_version < \"3.12\""}
-importlib-resources = {version = "*", markers = "python_version < \"3.9\""}
 "jaraco.classes" = "*"
 jeepney = {version = ">=0.4.2", markers = "sys_platform == \"linux\""}
 pywin32-ctypes = {version = ">=0.2.0", markers = "sys_platform == \"win32\""}
@@ -2687,17 +2701,6 @@ files = [
 
 [package.extras]
 testing = ["pytest", "pytest-cov"]
-
-[[package]]
-name = "pkgutil-resolve-name"
-version = "1.3.10"
-description = "Resolve a name to an object."
-optional = false
-python-versions = ">=3.6"
-files = [
-    {file = "pkgutil_resolve_name-1.3.10-py3-none-any.whl", hash = "sha256:ca27cc078d25c5ad71a9de0a7a330146c4e014c2462d9af19c6b828280649c5e"},
-    {file = "pkgutil_resolve_name-1.3.10.tar.gz", hash = "sha256:357d6c9e6a755653cfd78893817c0853af365dd51ec97f3d358a819373bbd174"},
-]
 
 [[package]]
 name = "platformdirs"
@@ -4288,6 +4291,17 @@ files = [
 cffi = ">=1.0"
 
 [[package]]
+name = "xyzservices"
+version = "2023.10.1"
+description = "Source of XYZ tiles providers"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "xyzservices-2023.10.1-py3-none-any.whl", hash = "sha256:6a4c38d3a9f89d3e77153eff9414b36a8ee0850c9e8b85796fd1b2a85b8dfd68"},
+    {file = "xyzservices-2023.10.1.tar.gz", hash = "sha256:091229269043bc8258042edbedad4fcb44684b0473ede027b5672ad40dc9fa02"},
+]
+
+[[package]]
 name = "zipp"
 version = "3.16.2"
 description = "Backport of pathlib-compatible object wrapper for zip files"
@@ -4304,5 +4318,5 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 
 [metadata]
 lock-version = "2.0"
-python-versions = ">=3.8, <3.11"
-content-hash = "842a6416220da0367676d61771d132320d56e66695187aa2ddcc05bfeabaf511"
+python-versions = ">=3.9, <3.11"
+content-hash = "5f586164dce49b4cfd4de650399a7879ce1e166a361e273d9699abb2535d6c11"
