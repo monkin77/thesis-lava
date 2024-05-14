@@ -12,6 +12,19 @@ curdoc().theme = "caliber"  # Can be one of "caliber", "dark_minimal", "light_mi
 line_colors = ["green", "blue", "red", "orange", "purple", "black", "cyan", "pink", "brown", "mediumaquamarine", "teal", "olive", "darkgreen", 
                "mediumslateblue", "lightsalmon", "gold", "indigo", "aqua", "rosybrown", "chocolate"]  # TODO: Add more colors if needed
 
+# --------------------------------------------------------- #
+# ---------- Map the annotated label to a color ----------- #
+# --------------------------------------------------------- #
+color_map = {                  
+    'Spike': 'red',
+    'Fast-Ripple': 'blue',
+    'Ripple': 'green',  
+    'Spike+Ripple': 'yellow',
+    'Spike+Fast-Ripple': 'pink',
+    'Ripple+Fast-Ripple': 'cyan',
+    'Spike+Ripple+Fast-Ripple': 'black'
+}
+
 """ Only possible in python>= 3.12 
 type BoxAnnotationParams = {
     "bottom": float,
