@@ -1,14 +1,6 @@
-from typing import NamedTuple, Optional
 import numpy as np
 from scipy.interpolate import interp1d
-
-class SignalToSpikeParameters(NamedTuple):
-    signal: np.ndarray
-    threshold_up: float
-    threshold_down: float
-    times: np.ndarray
-    refractory_period: float = 1    # Default value for refractory period
-    interpolation_factor: Optional[float] = 1.0    # Default value for interpolation factor
+from .sts_utils import SignalToSpikeParameters, SpikeTrains, skip_refractory_period
 
 def signal_to_spike(params: SignalToSpikeParameters):
     """
@@ -26,7 +18,10 @@ def signal_to_spike(params: SignalToSpikeParameters):
     - spikes_up (array): spike train for threshold crossing in a rising direction
     - spikes_dn (array): spike train for threshold crossing in a falling direction
     """
+    # This variable keeps track of the last recorded membrane potential where a significant oscillatory behavior was detected
     instant_dc = 0   # Initialize the instant DC (Direct Current) variable to 0. (Amplitude at time t)
+
+    # Initialize the spike trains for UP and DOWN spikes
     spikes_up = []
     spikes_dn = []
 
@@ -57,12 +52,21 @@ def signal_to_spike(params: SignalToSpikeParameters):
     idx = 0
     while idx < len(times):
         # If the signal increased in amplitude more than the THRESHOLD_UP value (since the last update to instant_dc), detect an UP spike. 
-        if ((instant_dc + params.threshold_up) < amplitudes[idx]):
+        if amplitudes[idx] - instant_dc > params.threshold_up:
             spikes_up.append(times[idx])    # Add the spike time to the UP spike train
 
             instant_dc = amplitudes[idx]     # Update the current amplitude to the new value
-            
-            idx += int(params.refractory_period * params.interpolation_factor)    # Skip the refractory period
 
+            idx = skip_refractory_period(times, idx, params.refractory_period)    # Skip the refractory period
+        # If the signal decreased in amplitude more than the THRESHOLD_DOWN value (since the last update to instant_dc), detect a DOWN spike.
+        elif amplitudes[idx] - instant_dc < -params.threshold_down:
+            spikes_dn.append(times[idx])    # Add the spike time to the DOWN spike train
 
-        idx += 1
+            instant_dc = amplitudes[idx]    # Update the current amplitude to the new value
+
+            idx = skip_refractory_period(times, idx, params.refractory_period)    # Skip the refractory period
+        else:
+            # Move to the next time point without updating the instant_dc (no significant oscillatory behavior detected)
+            idx += 1
+
+    return SpikeTrains(up=np.array(spikes_up), down=np.array(spikes_dn))
