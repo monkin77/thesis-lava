@@ -32,7 +32,8 @@ def signal_to_spike(params: SignalToSpikeParameters):
     # --------------------------------------------------------------------------------
     # ------- Signal Interpolation to a higher sampling frequency (OPTIONAL) ---------
     # --------------------------------------------------------------------------------
-    if (params.interpolation_factor is not None) or (params.interpolation_factor > 1):
+    if (params.interpolation_factor is not None) and (params.interpolation_factor > 1.0):
+        print("Interpolating...")
         # Return a function approximation of the signal, such that amplitude(t) = f(t)
         # This is done to interpolate the signal to a higher sampling frequency if needed
         interpolated_signal_func = interp1d(params.times, params.signal)
@@ -59,7 +60,7 @@ def signal_to_spike(params: SignalToSpikeParameters):
 
             idx = skip_refractory_period(times, idx, params.refractory_period)    # Skip the refractory period
         # If the signal decreased in amplitude more than the THRESHOLD_DOWN value (since the last update to instant_dc), detect a DOWN spike.
-        elif amplitudes[idx] - instant_dc < -params.threshold_down:
+        elif amplitudes[idx] - instant_dc < params.threshold_down:
             spikes_dn.append(times[idx])    # Add the spike time to the DOWN spike train
 
             instant_dc = amplitudes[idx]    # Update the current amplitude to the new value

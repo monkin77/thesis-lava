@@ -8,15 +8,15 @@ class SignalToSpikeParameters(NamedTuple):
     @times: np.ndarray: Array containing the time points of the signal
     @threshold_up: float: Threshold crossing in a rising direction
     @threshold_down: float: Threshold crossing in a falling direction
-    @refractory_period: float: Period in which no spike will be generated [same units as time vector]
+    @refractory_period: float: Period in which no spike will be generated [same units as time vector] (ms)
     @interpolation_factor: Optional[float]: Upsampling factor, new sampling frequency
     '''
     signal: np.ndarray
     times: np.ndarray
     threshold_up: float
     threshold_down: float
+    interpolation_factor: float = 0   # Default value for interpolation factor (0) indicating no interpolation
     refractory_period: float = 0    # Default value for refractory period (0)
-    interpolation_factor: Optional[float] = 1.0    # Default value for interpolation factor
 
 class SpikeTrains(NamedTuple):
     '''
