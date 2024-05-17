@@ -29,3 +29,11 @@ def read_spike_events(file_path: str):
         print("Unable to read the input file: ", file_path, " error:", e)
 
     return spike_events
+
+# Auxiliar method to check if the label has an HFO event
+def label_has_hfo_event(label):
+    """
+    This function checks if the label has an HFO event.
+    @label (str): Label of the marker.
+    """
+    return "Ripple" in label or "Fast-Ripple" in label
