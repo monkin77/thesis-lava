@@ -14,7 +14,7 @@ from lava.magma.core.resources import CPU
 from lava.magma.core.decorator import implements, requires, tag
 from lava.magma.core.model.py.model import PyLoihiProcessModel
 from lava.proc.lif.process import (LIF, LIFReset, TernaryLIF, LearningLIF,
-                                   LIFRefractory)
+                                   LIFRefractory, ConfigTimeConstantsLIF)
 
 
 class AbstractPyLifModelFloat(PyLoihiProcessModel):
@@ -559,3 +559,35 @@ class PyLearningLifModelFloat(LearningNeuronModelFloat,
         Dense process for learning.
         """
         super().run_spk()
+
+@implements(proc=ConfigTimeConstantsLIF, protocol=LoihiProtocol)
+@requires(CPU)
+@tag("floating_pt")
+class PyConfigTimeConstantsLifFloat(AbstractPyLifModelFloat):
+    """Implementation of Configurable time constants Leaky-Integrate-and-Fire neural process in
+    floating  point precision. This short and simple ProcessModel can be used for quick
+    algorithmic prototyping, without engaging with the nuances of a fixed
+    point implementation.
+    """
+    # TODO: Could add refractory capability to this model
+    s_out: PyOutPort = LavaPyType(PyOutPort.VEC_DENSE, float)
+    vth: float = LavaPyType(float, float)
+
+    # Overwrite the type of du and dv to array of float
+    du: np.ndarray = LavaPyType(np.ndarray, float)
+    dv: np.ndarray = LavaPyType(np.ndarray, float)
+    
+    def spiking_activation(self):
+        """Spiking activation function for LIF."""
+        return self.v > self.vth
+    
+    def subthr_dynamics(self, activation_in: np.ndarray):
+        """Sub-threshold dynamics of current and voltage variables for
+        the configurable tune constnats LIF model. 
+        This is where the 'leaky integration' happens. Each neuron has its own time constants
+        """
+        self.u[:] = self.u * (1 - self.du)
+        self.u[:] += activation_in
+        self.v[:] = self.v * (1 - self.dv) + self.u + self.bias_mant
+
+    # TODO: Implemented the PyConfigTimeConstantsLifFixed model (fixed point precision version)
