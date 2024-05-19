@@ -417,7 +417,50 @@ class LIFRefractory(LIF):
         self.proc_params["refractory_period"] = refractory_period
         self.refractory_period_end = Var(shape=shape, init=0)
 
-class ConfigTimeConstantsLIF(LIF):
+
+
+class AbstractConfigTimeConstantsLIF(AbstractProcess):
+    """Abstract class for variables common to all neurons with leaky
+    integrator dynamics."""
+
+    def __init__(
+        self,
+        *,
+        shape: ty.Tuple[int, ...],
+        u: ty.Union[float, list, np.ndarray],
+        v: ty.Union[float, list, np.ndarray],
+        du: ty.Optional[ty.Union[float, list, np.ndarray]] = 0,
+        dv: ty.Optional[ty.Union[float, list, np.ndarray]] = 0,
+        bias_mant: ty.Union[float, list, np.ndarray],
+        bias_exp: ty.Union[float, list, np.ndarray],
+        name: str,
+        log_config: LogConfig,
+        **kwargs,
+    ) -> None:
+        super().__init__(
+            shape=shape,
+            u=u,
+            v=v,
+            du=du,
+            dv=dv,
+            bias_mant=bias_mant,
+            bias_exp=bias_exp,
+            name=name,
+            log_config=log_config,
+            **kwargs,
+        )
+
+        self.a_in = InPort(shape=shape)
+        self.s_out = OutPort(shape=shape)
+        self.u = Var(shape=shape, init=u)
+        self.v = Var(shape=shape, init=v)
+        self.du = Var(shape=shape, init=du)     # Shape of du must match the shape of the neurons
+        self.dv = Var(shape=shape, init=dv)     # Shape of dv must match the shape of the neurons
+        self.bias_exp = Var(shape=shape, init=bias_exp)
+        self.bias_mant = Var(shape=shape, init=bias_mant)
+
+
+class ConfigTimeConstantsLIF(AbstractConfigTimeConstantsLIF):
     def __init__(
             self,
             *,
@@ -433,6 +476,33 @@ class ConfigTimeConstantsLIF(LIF):
             log_config: ty.Optional[LogConfig] = None,
             **kwargs,
     ) -> None:
+        # Try to convert du and dv to numpy arrays if they are not already
+        if np.isscalar(du):
+            print("du is scalar, converting to numpy array")
+            # If du is a scalar, create an array filled with that value with shape (n_neurons)
+            du = np.full(shape, du)
+        elif not isinstance(du, np.ndarray):
+            # If du is not a scalar and not a numpy array, try to convert it to a numpy array
+            try:
+                du = np.array(du)
+            except Exception as e:
+                raise ValueError("Failed to convert du to a numpy array. Please ensure it is either a scalar, list, or numpy array.") from e
+
+        # Do the same for dv
+        if np.isscalar(dv):
+            dv = np.full(shape, dv)
+        elif not isinstance(dv, np.ndarray):
+            try:
+                dv = np.array(dv)
+            except Exception as e:
+                raise ValueError("Failed to convert dv to a numpy array. Please ensure it is either a scalar, list, or numpy array.") from e
+            
+        # Check that du and dv have the correct shape
+        if du.shape != shape:
+            raise ValueError(f"du must have shape {shape}, but got shape {du.shape}.")
+        if dv.shape != shape:
+            raise ValueError(f"dv must have shape {shape}, but got shape {dv.shape}.")
+        
         super().__init__(
             shape=shape,
             u=u,
@@ -447,31 +517,7 @@ class ConfigTimeConstantsLIF(LIF):
             **kwargs,
         )
 
-        # Try to convert du and dv to numpy arrays if they are not already
-        if np.isscalar(du):
-            print("du is scalar, converting to numpy array")
-            # If du is a scalar, create an array filled with that value with shape (n_neurons)
-            self.du = np.full(shape, du)
-        elif not isinstance(du, np.ndarray):
-            # If du is not a scalar and not a numpy array, try to convert it to a numpy array
-            try:
-                self.du = np.array(du)
-            except Exception as e:
-                raise ValueError("Failed to convert du to a numpy array. Please ensure it is either a scalar, list, or numpy array.") from e
-
-        # Do the same for dv
-        if np.isscalar(dv):
-            self.dv = np.full(shape, dv)
-        elif not isinstance(dv, np.ndarray):
-            try:
-                self.dv = np.array(dv)
-            except Exception as e:
-                raise ValueError("Failed to convert dv to a numpy array. Please ensure it is either a scalar, list, or numpy array.") from e
-            
-        # Check that du and dv have the correct shape
-        if self.du.shape != shape:
-            raise ValueError(f"du must have shape {shape}, but got shape {du.shape}.")
-        if self.dv.shape != shape:
-            raise ValueError(f"dv must have shape {shape}, but got shape {dv.shape}.")
+        # Add the vth variable to the process
+        self.vth = Var(shape=(1,), init=vth)
         
         
