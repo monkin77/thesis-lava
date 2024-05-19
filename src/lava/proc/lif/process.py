@@ -449,28 +449,29 @@ class ConfigTimeConstantsLIF(LIF):
 
         # Try to convert du and dv to numpy arrays if they are not already
         if np.isscalar(du):
+            print("du is scalar, converting to numpy array")
             # If du is a scalar, create an array filled with that value with shape (n_neurons)
-            du = np.full(shape, du)
+            self.du = np.full(shape, du)
         elif not isinstance(du, np.ndarray):
             # If du is not a scalar and not a numpy array, try to convert it to a numpy array
             try:
-                du = np.array(du)
+                self.du = np.array(du)
             except Exception as e:
                 raise ValueError("Failed to convert du to a numpy array. Please ensure it is either a scalar, list, or numpy array.") from e
 
         # Do the same for dv
         if np.isscalar(dv):
-            dv = np.full(shape, dv)
+            self.dv = np.full(shape, dv)
         elif not isinstance(dv, np.ndarray):
             try:
-                dv = np.array(dv)
+                self.dv = np.array(dv)
             except Exception as e:
                 raise ValueError("Failed to convert dv to a numpy array. Please ensure it is either a scalar, list, or numpy array.") from e
             
         # Check that du and dv have the correct shape
-        if du.shape != shape:
+        if self.du.shape != shape:
             raise ValueError(f"du must have shape {shape}, but got shape {du.shape}.")
-        if dv.shape != shape:
+        if self.dv.shape != shape:
             raise ValueError(f"dv must have shape {shape}, but got shape {dv.shape}.")
         
         
