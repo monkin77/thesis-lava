@@ -461,6 +461,46 @@ class AbstractConfigTimeConstantsLIF(AbstractProcess):
 
 
 class ConfigTimeConstantsLIF(AbstractConfigTimeConstantsLIF):
+    """Configurable Time-Constants Leaky-Integrate-and-Fire (LIF) neural Process.
+
+    LIF dynamics abstracts to:
+    u[t] = u[t-1] * (1-du) + a_in         # neuron current
+    v[t] = v[t-1] * (1-dv) + u[t] + bias  # neuron voltage
+    s_out = v[t] > vth                    # spike if threshold is exceeded
+    v[t] = 0                              # reset at spike
+
+    Parameters
+    ----------
+    shape : tuple(int)
+        Number and topology of LIF neurons.
+    u : float, list, numpy.ndarray, optional
+        Initial value of the neurons' current.
+    v : float, list, numpy.ndarray, optional
+        Initial value of the neurons' voltage (membrane potential).
+    du : float, list, numpy.ndarray, optional
+        Inverse of decay time-constant for current decay. This can be a scalar, list,
+        or numpy array. Anyhow, it will be converted to a np array representing the 
+        time-constants of each neuron.
+    dv : float, list, numpy.ndarray, optional
+        Inverse of decay time-constant for voltage decay. This can be a scalar, list,
+        or numpy array. Anyhow, it will be converted to a np array representing the 
+        time-constants of each neuron.
+    bias_mant : float, list, numpy.ndarray, optional
+        Mantissa part of neuron bias.
+    bias_exp : float, list, numpy.ndarray, optional
+        Exponent part of neuron bias, if needed. Mostly for fixed point
+        implementations. Ignored for floating point implementations.
+    vth : float, optional
+        Neuron threshold voltage, exceeding which, the neuron will spike.
+        Currently, only a single threshold can be set for the entire
+        population of neurons.
+
+    Example
+    -------
+    >>> config_lif = ConfigTimeConstantsLIF(shape=(200, 15), du=10, dv=5)
+    This will create 200x15 LIF neurons that all have the same current decay
+    of 10 and voltage decay of 5.
+    """
     def __init__(
             self,
             *,
