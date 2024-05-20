@@ -1,17 +1,26 @@
+import numpy as np
 
-
-"""
-This function is used to find the spiking times of the neurons in the voltage array
-"""
-def find_spike_times(voltage_arr, v_th):
-    # Iterate the voltage array to find the spikes
+def find_spike_times(voltage_arr, v_th) -> np.ndarray:
+    """
+    This function is used to find the spiking times of the neurons in the voltage array
+    
+    Returns:
+        - spike_times: np.ndarray
+            An array of tuples where each tuple contains the time and the neuron index
+            of the neuron that spiked
+    """
+    # Array to store the spike times in a tuple (time, neuron_idx)
     spike_times = []
-    min_voltage_to_spike = v_th / 2
+    
+    # Define the minimum voltage of the previous time step to spike
+    min_voltage_to_spike = v_th * 0.5  
+    
+    # Iterate the voltage array to find the spikes
     for i in range(len(voltage_arr)):
         # Iterate each channel and check if the voltage is greater than the threshold
         for j in range(len(voltage_arr[i])):
             if voltage_arr[i][j] == 0.0 and i > 0 and voltage_arr[i-1][j] > min_voltage_to_spike:     # Spike detected
-                spike_times.append(i)
+                spike_times.append((i, j))
                 break
 
-    return spike_times
+    return np.array(spike_times)
