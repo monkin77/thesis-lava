@@ -105,5 +105,9 @@ def create_fig(title, x_axis_label, y_axis_label,
 
         p.add_layout(inner_box)
 
+    # Change the number of decimal places on hover
+    p.hover.formatters = {'@x': 'numeral', '@y': 'numeral'}
+    p.hover.tooltips = [("x", "@x{0.0}"), ("y", "@y{0.0000}")]
+
     # Return the plot
     return p
