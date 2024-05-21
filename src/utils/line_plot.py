@@ -100,8 +100,9 @@ def create_fig(title, x_axis_label, y_axis_label,
             left=box_annotation_params["left"], 
             right= box_annotation_params["right"], 
             fill_alpha=box_annotation_params["fill_alpha"], 
-            fill_color=box_annotation_params["fill_color"]
+            fill_color=box_annotation_params["fill_color"],
         )
+
         p.add_layout(inner_box)
 
     # Return the plot
