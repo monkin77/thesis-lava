@@ -560,10 +560,83 @@ class PyLearningLifModelFloat(LearningNeuronModelFloat,
         """
         super().run_spk()
 
+
+class AbstractPyConfigTimeConstantsLifModelFloat(PyLoihiProcessModel):
+    """Abstract implementation of floating point precision
+    configurable time constants leaky-integrate-and-fire neuron model.
+
+    Specific implementations inherit from here.
+    """
+
+    # a_in is the input port that receives the synaptic input.
+    # The positive values of a_in will increase the u_exc and negative values
+    # will increase the u_inh.
+    a_in: PyInPort = LavaPyType(PyInPort.VEC_DENSE, float)
+    s_out = None  # This will be an OutPort of different LavaPyTypes
+    u_exc: np.ndarray = LavaPyType(np.ndarray, float)
+    u_inh: np.ndarray = LavaPyType(np.ndarray, float)
+    u: np.ndarray = LavaPyType(np.ndarray, float)   # Net current (u_exc + u_inh)
+    v: np.ndarray = LavaPyType(np.ndarray, float)
+    bias_mant: np.ndarray = LavaPyType(np.ndarray, float)
+    bias_exp: np.ndarray = LavaPyType(np.ndarray, float)
+    du_exc: np.ndarray = LavaPyType(np.ndarray, float)
+    du_inh: np.ndarray = LavaPyType(np.ndarray, float)
+    dv: np.ndarray = LavaPyType(np.ndarray, float)
+
+    def spiking_activation(self):
+        """Abstract method to define the activation function that determines
+        how spikes are generated.
+        """
+        raise NotImplementedError(
+            "spiking activation() cannot be called from "
+            "an abstract ProcessModel"
+        )
+
+    def subthr_dynamics(self, activation_in: np.ndarray):
+        """Common sub-threshold dynamics of current and voltage variables for
+        all Configurable Time Constants LIF models. 
+        This is where the 'leaky integration' happens.
+        """
+        # Get the excitatory input from a_in -- Positive values increase u_exc
+        exc_a_in = np.clip(activation_in, a_min=0, a_max=None)
+        # Get the inhibitory input from a_in -- Negative values increase u_inh
+        inh_a_in = np.clip(activation_in, a_min=None, a_max=0)
+
+        # Update the excitatory and inhibitory currents
+        self.u_exc[:] = self.u_exc * (1 - self.du_exc)
+        self.u_exc[:] += exc_a_in
+
+        self.u_inh[:] = self.u_inh * (1 - self.du_inh)
+        self.u_inh[:] += inh_a_in
+
+        # Update the voltage
+        # Calculate the net current by adding the excitatory and inhibitory currents
+        self.u = self.u_exc + self.u_inh   # u_inh is negative
+
+        self.v[:] = self.v * (1 - self.dv) + self.u + self.bias_mant
+
+    def reset_voltage(self, spike_vector: np.ndarray):
+        """Voltage reset behaviour. This can differ for different neuron
+        models."""
+        self.v[spike_vector] = 0
+
+    def run_spk(self):
+        """The run function that performs the actual computation during
+        execution orchestrated by a PyLoihiProcessModel using the
+        LoihiProtocol.
+        """
+        super().run_spk()
+        a_in_data = self.a_in.recv()
+
+        self.subthr_dynamics(activation_in=a_in_data)
+        self.s_out_buff = self.spiking_activation()
+        self.reset_voltage(spike_vector=self.s_out_buff)
+        self.s_out.send(self.s_out_buff)
+
 @implements(proc=ConfigTimeConstantsLIF, protocol=LoihiProtocol)
 @requires(CPU)
 @tag("floating_pt")
-class PyConfigTimeConstantsLifFloat(AbstractPyLifModelFloat):
+class PyConfigTimeConstantsLifFloat(AbstractPyConfigTimeConstantsLifModelFloat):
     """Implementation of Configurable time constants Leaky-Integrate-and-Fire neural process in
     floating  point precision. This short and simple ProcessModel can be used for quick
     algorithmic prototyping, without engaging with the nuances of a fixed
@@ -572,22 +645,9 @@ class PyConfigTimeConstantsLifFloat(AbstractPyLifModelFloat):
     # TODO: Could add refractory capability to this model
     s_out: PyOutPort = LavaPyType(PyOutPort.VEC_DENSE, float)
     vth: float = LavaPyType(float, float)
-
-    # Overwrite the type of du and dv to array of float
-    du: np.ndarray = LavaPyType(np.ndarray, float)
-    dv: np.ndarray = LavaPyType(np.ndarray, float)
     
     def spiking_activation(self):
         """Spiking activation function for LIF."""
         return self.v > self.vth
-    
-    def subthr_dynamics(self, activation_in: np.ndarray):
-        """Sub-threshold dynamics of current and voltage variables for
-        the configurable tune constnats LIF model. 
-        This is where the 'leaky integration' happens. Each neuron has its own time constants
-        """
-        self.u[:] = self.u * (1 - self.du)
-        self.u[:] += activation_in
-        self.v[:] = self.v * (1 - self.dv) + self.u + self.bias_mant
 
-    # TODO: Implemented the PyConfigTimeConstantsLifFixed model (fixed point precision version)
+    # TODO: Implement the PyConfigTimeConstantsLifFixed model (fixed point precision version)

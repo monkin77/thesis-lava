@@ -10,6 +10,7 @@ from lava.magma.core.process.process import LogConfig, AbstractProcess
 from lava.magma.core.process.variable import Var
 from lava.magma.core.process.ports.ports import InPort, OutPort
 from lava.magma.core.process.neuron import LearningNeuronProcess
+from lava.utils.io import convert_to_numpy_array
 
 
 class AbstractLIF(AbstractProcess):
@@ -421,15 +422,17 @@ class LIFRefractory(LIF):
 
 class AbstractConfigTimeConstantsLIF(AbstractProcess):
     """Abstract class for variables common to all neurons with leaky
-    integrator dynamics."""
+    integrator dynamics and configurable time constants"""
 
     def __init__(
         self,
         *,
         shape: ty.Tuple[int, ...],
-        u: ty.Union[float, list, np.ndarray],
+        u_exc: ty.Union[float, list, np.ndarray],
+        u_inh: ty.Union[float, list, np.ndarray],
         v: ty.Union[float, list, np.ndarray],
-        du: ty.Optional[ty.Union[float, list, np.ndarray]] = 0,
+        du_exc: ty.Optional[ty.Union[float, list, np.ndarray]] = 0,
+        du_inh: ty.Optional[ty.Union[float, list, np.ndarray]] = 0,
         dv: ty.Optional[ty.Union[float, list, np.ndarray]] = 0,
         bias_mant: ty.Union[float, list, np.ndarray],
         bias_exp: ty.Union[float, list, np.ndarray],
@@ -439,9 +442,11 @@ class AbstractConfigTimeConstantsLIF(AbstractProcess):
     ) -> None:
         super().__init__(
             shape=shape,
-            u=u,
+            u_exc=u_exc,
+            u_inh=u_inh,
             v=v,
-            du=du,
+            du_exc=du_exc,
+            du_inh=du_inh,
             dv=dv,
             bias_mant=bias_mant,
             bias_exp=bias_exp,
@@ -452,9 +457,12 @@ class AbstractConfigTimeConstantsLIF(AbstractProcess):
 
         self.a_in = InPort(shape=shape)
         self.s_out = OutPort(shape=shape)
-        self.u = Var(shape=shape, init=u)
+        self.u_exc = Var(shape=shape, init=u_exc)
+        self.u_inh = Var(shape=shape, init=u_inh)
+        self.u = Var(shape=shape, init=u_exc + u_inh)     # neuron total current (u_inh is negative)
         self.v = Var(shape=shape, init=v)
-        self.du = Var(shape=shape, init=du)     # Shape of du must match the shape of the neurons
+        self.du_exc = Var(shape=shape, init=du_exc)     # Shape of du_exc must match the shape of the neurons
+        self.du_inh = Var(shape=shape, init=du_inh)     # Shape of du_inh must match the shape of the neurons
         self.dv = Var(shape=shape, init=dv)     # Shape of dv must match the shape of the neurons
         self.bias_exp = Var(shape=shape, init=bias_exp)
         self.bias_mant = Var(shape=shape, init=bias_mant)
@@ -464,7 +472,10 @@ class ConfigTimeConstantsLIF(AbstractConfigTimeConstantsLIF):
     """Configurable Time-Constants Leaky-Integrate-and-Fire (LIF) neural Process.
 
     LIF dynamics abstracts to:
-    u[t] = u[t-1] * (1-du) + a_in         # neuron current
+    u_exc[t] = u_exc[t-1] * (1-du_exc) + a_in (excitatory spike)         # neuron excitatory current
+    u_inh[t] = u_inh[t-1] * (1-du_inh) + a_in (inhibitory spike)        # neuron inhibitory current
+
+    u[t] = u_exc[t] + u_inh[t]                               # neuron total current (u_inh[t] is negative)
     v[t] = v[t-1] * (1-dv) + u[t] + bias  # neuron voltage
     s_out = v[t] > vth                    # spike if threshold is exceeded
     v[t] = 0                              # reset at spike
@@ -473,12 +484,18 @@ class ConfigTimeConstantsLIF(AbstractConfigTimeConstantsLIF):
     ----------
     shape : tuple(int)
         Number and topology of LIF neurons.
-    u : float, list, numpy.ndarray, optional
-        Initial value of the neurons' current.
+    u_exc : float, list, numpy.ndarray, optional
+        Initial value of the neurons' excitatory current.
+    u_inh : float, list, numpy.ndarray, optional
+        Initial value of the neurons' inhibitory current.
     v : float, list, numpy.ndarray, optional
         Initial value of the neurons' voltage (membrane potential).
-    du : float, list, numpy.ndarray, optional
-        Inverse of decay time-constant for current decay. This can be a scalar, list,
+    du_exc : float, list, numpy.ndarray, optional
+        Inverse of decay time-constant for excitatory current decay. This can be a scalar, list,
+        or numpy array. Anyhow, it will be converted to a np array representing the 
+        time-constants of each neuron.
+    du_inh : float, list, numpy.ndarray, optional
+        Inverse of decay time-constant for inhibitory current decay. This can be a scalar, list,
         or numpy array. Anyhow, it will be converted to a np array representing the 
         time-constants of each neuron.
     dv : float, list, numpy.ndarray, optional
@@ -505,9 +522,11 @@ class ConfigTimeConstantsLIF(AbstractConfigTimeConstantsLIF):
             self,
             *,
             shape: ty.Tuple[int, ...],
-            u: ty.Optional[ty.Union[float, list, np.ndarray]] = 0,
-            v: ty.Optional[ty.Union[float, list, np.ndarray]] = 0,
-            du: ty.Optional[ty.Union[float, list, np.ndarray]] = 0,
+            v: ty.Union[float, list, np.ndarray],
+            u_exc: ty.Union[float, list, np.ndarray] = 0,
+            u_inh: ty.Union[float, list, np.ndarray] = 0,
+            du_exc: ty.Optional[ty.Union[float, list, np.ndarray]] = 0,
+            du_inh: ty.Optional[ty.Union[float, list, np.ndarray]] = 0,
             dv: ty.Optional[ty.Union[float, list, np.ndarray]] = 0,
             bias_mant: ty.Optional[ty.Union[float, list, np.ndarray]] = 0,
             bias_exp: ty.Optional[ty.Union[float, list, np.ndarray]] = 0,
@@ -516,38 +535,19 @@ class ConfigTimeConstantsLIF(AbstractConfigTimeConstantsLIF):
             log_config: ty.Optional[LogConfig] = None,
             **kwargs,
     ) -> None:
-        # Try to convert du and dv to numpy arrays if they are not already
-        if np.isscalar(du):
-            print("du is scalar, converting to numpy array")
-            # If du is a scalar, create an array filled with that value with shape (n_neurons)
-            du = np.full(shape, du)
-        elif not isinstance(du, np.ndarray):
-            # If du is not a scalar and not a numpy array, try to convert it to a numpy array
-            try:
-                du = np.array(du)
-            except Exception as e:
-                raise ValueError("Failed to convert du to a numpy array. Please ensure it is either a scalar, list, or numpy array.") from e
-
-        # Do the same for dv
-        if np.isscalar(dv):
-            dv = np.full(shape, dv)
-        elif not isinstance(dv, np.ndarray):
-            try:
-                dv = np.array(dv)
-            except Exception as e:
-                raise ValueError("Failed to convert dv to a numpy array. Please ensure it is either a scalar, list, or numpy array.") from e
-            
-        # Check that du and dv have the correct shape
-        if du.shape != shape:
-            raise ValueError(f"du must have shape {shape}, but got shape {du.shape}.")
-        if dv.shape != shape:
-            raise ValueError(f"dv must have shape {shape}, but got shape {dv.shape}.")
+        # Try to convert du_exc, du_inh and dv to numpy arrays if they are not already
+        # If unsuccessful, it will raise a ValueError
+        du_exc = convert_to_numpy_array(du_exc, shape, "du_exc", verbose=True)
+        du_inh = convert_to_numpy_array(du_inh, shape, "du_inh", verbose=True)
+        dv = convert_to_numpy_array(dv, shape, "dv", verbose=True)
         
         super().__init__(
             shape=shape,
-            u=u,
+            u_exc=u_exc,
+            u_inh=u_inh,
             v=v,
-            du=du,
+            du_exc=du_exc,
+            du_inh=du_inh,
             dv=dv,
             bias_mant=bias_mant,
             bias_exp=bias_exp,
