@@ -30,6 +30,14 @@ def read_spike_events(file_path: str):
 
     return spike_events
 
+# Create enum for the different types of markers
+class MarkerType:
+    """Enum for the different types of markers"""
+    RIPPLE = 1
+    FAST_RIPPLE = 2
+    BOTH = 3
+    OTHER = 4
+
 # Auxiliar method to check if the label has an HFO event
 def label_has_hfo_event(label):
     """
@@ -37,3 +45,19 @@ def label_has_hfo_event(label):
     @label (str): Label of the marker.
     """
     return "Ripple" in label or "Fast-Ripple" in label
+
+# Auxiliar method to check if the label has a Ripple
+def label_has_ripple(label):
+    """
+    This function checks if the label has a Ripple.
+    @label (str): Label of the marker.
+    """
+    return "Ripple" in label
+
+# Auxiliar method to check if the label has a Fast Ripple
+def label_has_fast_ripple(label):
+    """
+    This function checks if the label has a Fast Ripple.
+    @label (str): Label of the marker.
+    """
+    return "Fast-Ripple" in label
