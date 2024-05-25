@@ -22,7 +22,7 @@ Returns:
     bplt.Figure: The plot
 """
 def create_bar_fig(title, x_axis_label, y_axis_label, 
-               x, y, x_range, sizing_mode=None, 
+               x, y, x_range, sizing_mode=None, tooltips=None, 
                bar_width=0.9, is_vertical=True, height=None):
     # Create the plot
     p = bplt.figure(
@@ -31,6 +31,8 @@ def create_bar_fig(title, x_axis_label, y_axis_label,
         x_axis_label=x_axis_label, 
         y_axis_label=y_axis_label,
         sizing_mode=sizing_mode or "stretch_both",    # Make the plot stretch in both width and height
+        tools="pan, box_zoom, wheel_zoom, hover, undo, redo, zoom_in, zoom_out, reset, save",
+        tooltips=tooltips or "Data point @x: @top"
         # y_range=(-0.5, 5)  # Set the range of the y-axis,
     )
 
@@ -45,7 +47,6 @@ def create_bar_fig(title, x_axis_label, y_axis_label,
         p.plot_height = height
 
     # Axis settings
-    # p.xaxis.formatter = BasicTickFormatter(use_scientific=False)
     p.xgrid.grid_line_color = None
     p.y_range.start = 0
 
