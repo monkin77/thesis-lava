@@ -61,3 +61,17 @@ def label_has_fast_ripple(label):
     @label (str): Label of the marker.
     """
     return "Fast-Ripple" in label
+
+def band_to_file_name(band: MarkerType):
+    """
+    This function returns the file name for the band.
+    @band (MarkerType): The band to get the file name for.
+    """
+    if band == MarkerType.RIPPLE:
+        return "ripple"
+    elif band == MarkerType.FAST_RIPPLE:
+        return "fr"
+    elif band == MarkerType.BOTH:
+        return "both"
+    else:
+        return "unknown"
