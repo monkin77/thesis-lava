@@ -75,3 +75,11 @@ def band_to_file_name(band: MarkerType):
         return "both"
     else:
         return "unknown"
+    
+
+SAMPLING_RATE = 2048    # 2048 Hz
+INPUT_DURATION_S = 120    # 120 seconds
+INPUT_DURATION = INPUT_DURATION_S * (10**3)    # 120000 ms or 120 seconds
+NUM_SAMPLES = SAMPLING_RATE * INPUT_DURATION_S  # 2048 samples per second for 120 seconds
+
+X_STEP = 1/SAMPLING_RATE * (10**3)  # 0.48828125 ms
