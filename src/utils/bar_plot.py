@@ -2,7 +2,7 @@
 # bokeh docs: https://docs.bokeh.org/en/2.4.1/docs/first_steps/first_steps_1.html
 import bokeh.plotting as bplt
 from bokeh.io import curdoc
-from bokeh.models import BoxAnnotation, Whisker, ColumnDataSource, Range1d
+from bokeh.models import BoxAnnotation, Whisker, ColumnDataSource, Range1d, LabelSet
 import numpy as np
 
 """
@@ -85,49 +85,90 @@ def create_histogram(title, x, bins, x_range=None, legend_label="Histogram", is_
     return p
 
 
-def create_box_plot(title, values: np.ndarray, sizing_mode=None, 
-                    x_axis_label = 'x', y_axis_label = "y", height=None):
-    # Calculate the quantiles of the ripple max amplitudes
-    quantiles = [0.25, 0.5, 0.75]
-    ripple_quantiles = np.quantile(values, quantiles)
+def create_box_plot(title, box_arrays: np.ndarray, sizing_mode=None, 
+                    x_axis_labels = None, y_axis_label = "y", height=None):
+    """
+    create_box_plot: Create a box plot with the given parameters
+    @param title: Title of the plot
+    @param box_arrays: List of arrays containing the values for each box
+    @param sizing_mode: Sizing mode of the plot
+    @param x_axis_label: Label of the x-axis
+    @param y_axis_label: Label of the y-axis
+    @param height: Height of the plot
+    """
 
-    print(f"ripple_quantiles:  {ripple_quantiles}")
-
-    # Compute the IQR outlier boundaries
-    ripple_iqr = ripple_quantiles[2] - ripple_quantiles[0]
-    print("Ripple IQR: ", ripple_iqr)
-
-    # Calculate the upper and lower whisker values
-    upper = ripple_quantiles[2] + 1.5 * ripple_iqr
-    lower = max(ripple_quantiles[0] - 1.5 * ripple_iqr, 0)
-
+    # Create the plot
     p = bplt.figure(title=title, 
-            background_fill_color="white", y_axis_label=y_axis_label,)
+            background_fill_color="white", y_axis_label=y_axis_label)
 
-    # Add a box annotation for the IQR
-    box = BoxAnnotation(top=ripple_quantiles[2], bottom=ripple_quantiles[0], left=0.4, right=0.6, 
-                        fill_color="green", fill_alpha=0.4,
-                        line_color="black", line_alpha=1.0, line_width=1.5)
-    p.add_layout(box)
+    # Define the number of boxes
+    n_boxes = len(box_arrays)
 
-    # Add a line for the median
-    p.line([0.4, 0.6], [ripple_quantiles[1], ripple_quantiles[1]], line_color="black", line_width=2)
+    # Store the max_upper value
+    max_upper = 0
 
-    # Add whiskers
-    source = ColumnDataSource(data=dict(values=values))
-    upper_whisker = Whisker(source=source, base=0.5, upper=upper, lower=lower)
-    p.add_layout(upper_whisker)
+    quantiles = [0.25, 0.5, 0.75]
+    for (box_idx, box_array) in enumerate(box_arrays):
+        # Convert the box array to a numpy array
+        box_array = np.array(box_array)
 
-    # Add Outliers
-    # Find the outliers
-    upper_outliers = values[values > upper]
-    lower_outliers = values[values < lower]
-    p.circle([0.5] * len(upper_outliers), upper_outliers, size=5, color="red", fill_alpha=0.6)
-    p.circle([0.5] * len(lower_outliers), lower_outliers, size=5, color="red", fill_alpha=0.6)
+        # Calculate the quantiles of the ripple max amplitudes
+        ripple_quantiles = np.quantile(box_array, quantiles)
+
+        print(f"ripple_quantiles:  {ripple_quantiles}")
+
+        # Compute the IQR outlier boundaries
+        ripple_iqr = ripple_quantiles[2] - ripple_quantiles[0]
+        print("Ripple IQR: ", ripple_iqr)
+
+        # Calculate the upper and lower whisker values
+        upper = ripple_quantiles[2] + 1.5 * ripple_iqr
+        lower = max(ripple_quantiles[0] - 1.5 * ripple_iqr, 0)
+        # Update the max_upper value
+        max_upper = max(max_upper, upper)
+
+        # Calculate the x-offset for the box
+        x_offset = box_idx * 1.0
+        # Calculate the position of the box
+        x_left = 0.4 + x_offset
+        x_right = 0.6 + x_offset
+
+        # Add a box annotation for the IQR of the current box
+        box = BoxAnnotation(top=ripple_quantiles[2], bottom=ripple_quantiles[0], left=x_left, right=x_right, 
+                            fill_color="green", fill_alpha=0.4,
+                            line_color="black", line_alpha=1.0, line_width=1.5)
+        p.add_layout(box)
+
+        # Add a line for the median
+        p.line([x_left, x_right], [ripple_quantiles[1], ripple_quantiles[1]], line_color="black", line_width=2)
+
+        # Add whiskers
+        source = ColumnDataSource(data=dict(values=box_array))
+        # Calculate the x-position of the whisker
+        x_whisker = 0.5 + x_offset
+        upper_whisker = Whisker(source=source, base=x_whisker, upper=upper, lower=lower)
+        p.add_layout(upper_whisker)
+
+        # Add Outliers
+        # Find the outliers
+        upper_outliers = box_array[box_array > upper]
+        lower_outliers = box_array[box_array < lower]
+        p.circle([0.5] * len(upper_outliers), upper_outliers, size=5, color="red", fill_alpha=0.6)
+        p.circle([0.5] * len(lower_outliers), lower_outliers, size=5, color="red", fill_alpha=0.6)
 
     # Change the axis
-    p.x_range = Range1d(0, 1)
-    p.y_range = Range1d(-0.1, upper * 1.25)
+    p.x_range = Range1d(0, n_boxes)
+
+    # Calculate the y_min value according to the max_upper value
+    y_min_range = -max(0.2, max_upper * 0.05)
+    p.y_range = Range1d(y_min_range, max_upper * 1.2)
+
+    # Add the x-axis labels
+    x_axis_ticks = [0.5 + i for i in range(n_boxes)]
+    p.xaxis.ticker = x_axis_ticks
+    if x_axis_labels is not None:
+        # Override the x-axis labels
+        p.xaxis.major_label_overrides = dict(zip(x_axis_ticks, x_axis_labels))
 
     # Return the plot
     return p
