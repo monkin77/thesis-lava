@@ -38,6 +38,12 @@ class MarkerType:
     BOTH = 3
     OTHER = 4
 
+class BaselineAlgorithm:
+    """Enum for the different types of baseline algorithms"""
+    MEDIAN = "q1"
+    MEAN = "mean"
+
+
 # Auxiliar method to check if the label has an HFO event
 def label_has_hfo_event(label):
     """
