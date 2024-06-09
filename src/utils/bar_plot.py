@@ -153,8 +153,8 @@ def create_box_plot(title, box_arrays: np.ndarray, sizing_mode=None,
         # Find the outliers
         upper_outliers = box_array[box_array > upper]
         lower_outliers = box_array[box_array < lower]
-        p.circle([0.5] * len(upper_outliers), upper_outliers, size=5, color="red", fill_alpha=0.6)
-        p.circle([0.5] * len(lower_outliers), lower_outliers, size=5, color="red", fill_alpha=0.6)
+        p.circle([x_whisker] * len(upper_outliers), upper_outliers, size=5, color="red", fill_alpha=0.6)
+        p.circle([x_whisker] * len(lower_outliers), lower_outliers, size=5, color="red", fill_alpha=0.6)
 
     # Change the axis
     p.x_range = Range1d(0, n_boxes)
