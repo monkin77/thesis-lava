@@ -24,6 +24,5 @@ def find_spike_times(voltage_arr, current_arr) -> np.ndarray:
                 # If the previous voltage was positive and the current is positive -> Spike
                 if voltage_arr[i-1][j] > 0 and current_arr[i][j] > 0:
                     spike_times.append((i, j))
-                    break
 
     return np.array(spike_times)
