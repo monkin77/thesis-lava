@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Feature Neurons Relevancy (%) Bar Plot</title>
+    <style>
+      html, body {
+        box-sizing: border-box;
+        display: flow-root;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-3.3.4.min.js"></script>
+    <script type="text/javascript">
+        Bokeh.set_log_level("info");
+    </script>
+  </head>
+  <body>
+    <div id="a95bbaac-74b4-403e-8e69-361892b7aa51" data-root-id="p1246" style="display: contents;"></div>
+  
+    <script type="application/json" id="p1293">
+      {"31d349c4-6717-4d1d-826e-c4d5a325dc51":{"version":"3.3.4","title":"Bokeh Application","roots":[{"type":"object","name":"Figure","id":"p1246","attributes":{"sizing_mode":"stretch_width","x_range":{"type":"object","name":"FactorRange","id":"p1256","attributes":{"factors":["Neu. 85","Neu. 6","Neu. 50","Neu. 91","Neu. 231","Neu. 16","Neu. 26","Neu. 20","Neu. 206","Neu. 255","Neu. 18","Neu. 38","Neu. 17","Neu. 203","Neu. 12","Neu. 170","Neu. 8","Neu. 185","Neu. 233","Neu. 5","Neu. 136","Neu. 228","Neu. 124","Neu. 0","Neu. 7","Neu. 31","Neu. 19","Neu. 89","Neu. 186","Neu. 101","Neu. 109","Neu. 213","Neu. 45","Neu. 71","Neu. 154","Neu. 98","Neu. 58","Neu. 174","Neu. 103","Neu. 235","Neu. 65","Neu. 75","Neu. 115","Neu. 32","Neu. 10","Neu. 47","Neu. 42","Neu. 180","Neu. 127","Neu. 4","Neu. 22","Neu. 24","Neu. 30","Neu. 220","Neu. 123","Neu. 236","Neu. 173","Neu. 87","Neu. 3","Neu. 113","Neu. 9","Neu. 44","Neu. 15","Neu. 39","Neu. 141","Neu. 152","Neu. 35","Neu. 57","Neu. 142","Neu. 2","Neu. 33","Neu. 40","Neu. 54","Neu. 11","Neu. 46","Neu. 76","Neu. 14","Neu. 37","Neu. 27","Neu. 1","Neu. 93","Neu. 23","Neu. 43","Neu. 198","Neu. 190","Neu. 83","Neu. 155","Neu. 182","Neu. 81","Neu. 157","Neu. 110","Neu. 61","Neu. 77","Neu. 138","Neu. 199","Neu. 29","Neu. 70","Neu. 234","Neu. 215","Neu. 253","Neu. 223","Neu. 78","Neu. 184","Neu. 99","Neu. 114","Neu. 92","Neu. 111","Neu. 80","Neu. 230","Neu. 148","Neu. 237","Neu. 227","Neu. 112","Neu. 246","Neu. 66","Neu. 133","Neu. 187","Neu. 193","Neu. 117","Neu. 34","Neu. 209","Neu. 188","Neu. 226","Neu. 250"]}},"y_range":{"type":"object","name":"DataRange1d","id":"p1248","attributes":{"start":0}},"x_scale":{"type":"object","name":"CategoricalScale","id":"p1257"},"y_scale":{"type":"object","name":"LinearScale","id":"p1258"},"title":{"type":"object","name":"Title","id":"p1249","attributes":{"text":"Feature Neurons Relevant Spikes Ratio"}},"renderers":[{"type":"object","name":"GlyphRenderer","id":"p1290","attributes":{"data_source":{"type":"object","name":"ColumnDataSource","id":"p1284","attributes":{"selected":{"type":"object","name":"Selection","id":"p1285","attributes":{"indices":[],"line_indices":[]}},"selection_policy":{"type":"object","name":"UnionRenderers","id":"p1286"},"data":{"type":"map","entries":[["x",["Neu. 15","Neu. 1","Neu. 234","Neu. 39","Neu. 44","Neu. 93","Neu. 2","Neu. 3","Neu. 37","Neu. 24","Neu. 9","Neu. 10","Neu. 29","Neu. 11","Neu. 46","Neu. 7","Neu. 30","Neu. 4","Neu. 141","Neu. 14","Neu. 40","Neu. 152","Neu. 58","Neu. 22","Neu. 8","Neu. 54","Neu. 27","Neu. 61","Neu. 182","Neu. 215","Neu. 235","Neu. 199","Neu. 113","Neu. 98","Neu. 23","Neu. 35","Neu. 109","Neu. 70","Neu. 157","Neu. 71","Neu. 253","Neu. 81","Neu. 33","Neu. 19","Neu. 43","Neu. 198","Neu. 77","Neu. 32","Neu. 223","Neu. 180","Neu. 185","Neu. 190","Neu. 78","Neu. 184","Neu. 5","Neu. 57","Neu. 65","Neu. 0","Neu. 47","Neu. 75","Neu. 127","Neu. 174","Neu. 85","Neu. 99","Neu. 83","Neu. 142","Neu. 45","Neu. 103","Neu. 76","Neu. 213","Neu. 155","Neu. 220","Neu. 138","Neu. 114","Neu. 92","Neu. 203","Neu. 111","Neu. 80","Neu. 115","Neu. 6","Neu. 123","Neu. 236","Neu. 31","Neu. 110","Neu. 101","Neu. 230","Neu. 124","Neu. 154","Neu. 228","Neu. 233","Neu. 38","Neu. 148","Neu. 173","Neu. 237","Neu. 227","Neu. 112","Neu. 246","Neu. 18","Neu. 66","Neu. 50","Neu. 136","Neu. 42","Neu. 17","Neu. 87","Neu. 12","Neu. 133","Neu. 91","Neu. 89","Neu. 187","Neu. 186","Neu. 231","Neu. 193","Neu. 16","Neu. 26","Neu. 170","Neu. 20","Neu. 206","Neu. 117","Neu. 255","Neu. 34","Neu. 209","Neu. 188","Neu. 226","Neu. 250"]],["top",[25.757575757575758,20.8955223880597,0.0,25.233644859813083,27.536231884057973,20.0,24.409448818897637,32.97872340425532,22.388059701492537,33.33333333333333,29.230769230769234,36.7816091954023,10.0,23.25581395348837,23.076923076923077,53.06122448979592,33.33333333333333,34.065934065934066,25.0,22.5,23.728813559322035,25.0,40.0,33.734939759036145,65.0,23.52941176470588,21.052631578947366,15.0,17.77777777777778,0.0,38.095238095238095,12.5,32.5,41.02564102564102,20.0,25.0,47.368421052631575,5.405405405405405,16.666666666666664,44.44444444444444,0.0,17.391304347826086,23.809523809523807,52.0,20.0,20.0,14.285714285714285,37.03703703703704,0.0,34.61538461538461,60.0,20.0,0.0,0.0,58.620689655172406,25.0,37.5,53.48837209302325,36.36363636363637,37.5,34.48275862068966,40.0,100.0,0.0,20.0,25.0,45.45454545454545,40.0,23.076923076923077,46.15384615384615,20.0,33.33333333333333,14.285714285714285,0.0,0.0,66.66666666666666,0.0,0.0,37.5,100.0,33.33333333333333,33.33333333333333,52.94117647058824,16.666666666666664,47.82608695652174,0.0,54.54545454545454,44.44444444444444,55.55555555555556,60.0,81.25,0.0,33.33333333333333,0.0,0.0,0.0,0.0,85.71428571428571,0.0,100.0,57.14285714285714,36.36363636363637,80.0,33.33333333333333,66.66666666666666,0.0,100.0,50.0,0.0,50.0,100.0,0.0,100.0,100.0,66.66666666666666,100.0,100.0,0.0,100.0,0.0,0.0,0.0,0.0,0.0]]]}}},"view":{"type":"object","name":"CDSView","id":"p1291","attributes":{"filter":{"type":"object","name":"AllIndices","id":"p1292"}}},"glyph":{"type":"object","name":"VBar","id":"p1287","attributes":{"x":{"type":"field","field":"x"},"width":{"type":"value","value":0.5},"top":{"type":"field","field":"top"},"line_color":{"type":"value","value":"blue"},"fill_color":{"type":"value","value":"blue"},"hatch_color":{"type":"value","value":"blue"}}},"nonselection_glyph":{"type":"object","name":"VBar","id":"p1288","attributes":{"x":{"type":"field","field":"x"},"width":{"type":"value","value":0.5},"top":{"type":"field","field":"top"},"line_color":{"type":"value","value":"blue"},"line_alpha":{"type":"value","value":0.1},"fill_color":{"type":"value","value":"blue"},"fill_alpha":{"type":"value","value":0.1},"hatch_color":{"type":"value","value":"blue"},"hatch_alpha":{"type":"value","value":0.1}}},"muted_glyph":{"type":"object","name":"VBar","id":"p1289","attributes":{"x":{"type":"field","field":"x"},"width":{"type":"value","value":0.5},"top":{"type":"field","field":"top"},"line_color":{"type":"value","value":"blue"},"line_alpha":{"type":"value","value":0.2},"fill_color":{"type":"value","value":"blue"},"fill_alpha":{"type":"value","value":0.2},"hatch_color":{"type":"value","value":"blue"},"hatch_alpha":{"type":"value","value":0.2}}}}}],"toolbar":{"type":"object","name":"Toolbar","id":"p1255","attributes":{"tools":[{"type":"object","name":"PanTool","id":"p1269"},{"type":"object","name":"BoxZoomTool","id":"p1270","attributes":{"overlay":{"type":"object","name":"BoxAnnotation","id":"p1271","attributes":{"syncable":false,"level":"overlay","visible":false,"left":{"type":"number","value":"nan"},"right":{"type":"number","value":"nan"},"top":{"type":"number","value":"nan"},"bottom":{"type":"number","value":"nan"},"left_units":"canvas","right_units":"canvas","top_units":"canvas","bottom_units":"canvas","line_color":"black","line_alpha":1.0,"line_width":2,"line_dash":[4,4],"fill_color":"lightgrey","fill_alpha":0.5}}}},{"type":"object","name":"WheelZoomTool","id":"p1276","attributes":{"renderers":"auto"}},{"type":"object","name":"HoverTool","id":"p1277","attributes":{"renderers":"auto","tooltips":[["Neuron Index","@x"],["Relevant Spike Ratio","@top%"]]}},{"type":"object","name":"UndoTool","id":"p1278"},{"type":"object","name":"RedoTool","id":"p1279"},{"type":"object","name":"ZoomInTool","id":"p1280","attributes":{"renderers":"auto"}},{"type":"object","name":"ZoomOutTool","id":"p1281","attributes":{"renderers":"auto"}},{"type":"object","name":"ResetTool","id":"p1282"},{"type":"object","name":"SaveTool","id":"p1283"}]}},"left":[{"type":"object","name":"LinearAxis","id":"p1264","attributes":{"ticker":{"type":"object","name":"BasicTicker","id":"p1265","attributes":{"mantissas":[1,2,5]}},"formatter":{"type":"object","name":"BasicTickFormatter","id":"p1266"},"axis_label":"Relevant Spike Ratio (%)","major_label_policy":{"type":"object","name":"AllLabels","id":"p1267"}}}],"below":[{"type":"object","name":"CategoricalAxis","id":"p1259","attributes":{"ticker":{"type":"object","name":"CategoricalTicker","id":"p1260"},"formatter":{"type":"object","name":"CategoricalTickFormatter","id":"p1261"},"axis_label":"Feature Neuron Index","major_label_policy":{"type":"object","name":"AllLabels","id":"p1262"}}}],"center":[{"type":"object","name":"Grid","id":"p1263","attributes":{"axis":{"id":"p1259"},"grid_line_color":null}},{"type":"object","name":"Grid","id":"p1268","attributes":{"dimension":1,"axis":{"id":"p1264"}}}]}}]}}
+    </script>
+    <script type="text/javascript">
+      (function() {
+        const fn = function() {
+          Bokeh.safely(function() {
+            (function(root) {
+              function embed_document(root) {
+              const docs_json = document.getElementById('p1293').textContent;
+              const render_items = [{"docid":"31d349c4-6717-4d1d-826e-c4d5a325dc51","roots":{"p1246":"a95bbaac-74b4-403e-8e69-361892b7aa51"},"root_ids":["p1246"]}];
+              root.Bokeh.embed.embed_items(docs_json, render_items);
+              }
+              if (root.Bokeh !== undefined) {
+                embed_document(root);
+              } else {
+                let attempts = 0;
+                const timer = setInterval(function(root) {
+                  if (root.Bokeh !== undefined) {
+                    clearInterval(timer);
+                    embed_document(root);
+                  } else {
+                    attempts++;
+                    if (attempts > 100) {
+                      clearInterval(timer);
+                      console.log("Bokeh: ERROR: Unable to run BokehJS code because BokehJS library is missing");
+                    }
+                  }
+                }, 10, root)
+              }
+            })(window);
+          });
+        };
+        if (document.readyState != "loading") fn();
+        else document.addEventListener("DOMContentLoaded", fn);
+      })();
+    </script>
+  </body>
+</html>
