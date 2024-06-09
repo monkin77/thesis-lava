@@ -43,6 +43,7 @@ class BaselineAlgorithm:
     Q1 = "q1"
     MEAN = "mean"
     MEDIAN = "median"
+    Q3 = "q3"
 
 
 # Auxiliar method to check if the label has an HFO event
