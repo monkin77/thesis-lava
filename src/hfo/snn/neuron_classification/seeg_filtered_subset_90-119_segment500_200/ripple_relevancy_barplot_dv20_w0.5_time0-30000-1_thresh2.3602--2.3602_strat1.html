@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Feature Neurons Relevancy (%) Bar Plot</title>
+    <style>
+      html, body {
+        box-sizing: border-box;
+        display: flow-root;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-3.3.4.min.js"></script>
+    <script type="text/javascript">
+        Bokeh.set_log_level("info");
+    </script>
+  </head>
+  <body>
+    <div id="a3e0cd76-d3db-42c4-a2ab-25a98cd5493f" data-root-id="p1099" style="display: contents;"></div>
+  
+    <script type="application/json" id="p1146">
+      {"a6a1eaf8-f346-4829-b28c-882af0921510":{"version":"3.3.4","title":"Bokeh Application","roots":[{"type":"object","name":"Figure","id":"p1099","attributes":{"sizing_mode":"stretch_width","x_range":{"type":"object","name":"FactorRange","id":"p1109","attributes":{"factors":["Neu. 23","Neu. 40","Neu. 154","Neu. 36","Neu. 30","Neu. 231","Neu. 188","Neu. 75","Neu. 29","Neu. 105","Neu. 243","Neu. 149","Neu. 169","Neu. 104","Neu. 79","Neu. 98","Neu. 132","Neu. 199","Neu. 94","Neu. 213","Neu. 191","Neu. 142","Neu. 117","Neu. 31","Neu. 198","Neu. 26","Neu. 20","Neu. 15","Neu. 77","Neu. 19","Neu. 34","Neu. 140","Neu. 48","Neu. 131","Neu. 201","Neu. 16","Neu. 17","Neu. 120","Neu. 65","Neu. 38","Neu. 229","Neu. 152","Neu. 12","Neu. 236","Neu. 18","Neu. 14","Neu. 33","Neu. 150","Neu. 247","Neu. 155","Neu. 74","Neu. 207","Neu. 159","Neu. 35","Neu. 32","Neu. 4","Neu. 11","Neu. 64","Neu. 2","Neu. 37","Neu. 143","Neu. 52","Neu. 163","Neu. 6","Neu. 60","Neu. 175","Neu. 116","Neu. 9","Neu. 5","Neu. 10","Neu. 85","Neu. 21","Neu. 27","Neu. 25","Neu. 209","Neu. 7","Neu. 95","Neu. 203","Neu. 183","Neu. 192","Neu. 28","Neu. 55","Neu. 84","Neu. 86","Neu. 107","Neu. 8","Neu. 137","Neu. 3","Neu. 1","Neu. 22","Neu. 135","Neu. 125","Neu. 102","Neu. 61","Neu. 160","Neu. 13","Neu. 57","Neu. 0","Neu. 90","Neu. 62","Neu. 151","Neu. 47","Neu. 72","Neu. 193","Neu. 128","Neu. 92","Neu. 73","Neu. 101","Neu. 44","Neu. 54","Neu. 127","Neu. 42","Neu. 141","Neu. 43","Neu. 179","Neu. 83","Neu. 235","Neu. 177","Neu. 121","Neu. 66","Neu. 89","Neu. 222","Neu. 185","Neu. 59","Neu. 129","Neu. 238","Neu. 39","Neu. 232","Neu. 63","Neu. 50","Neu. 67","Neu. 196","Neu. 91","Neu. 124","Neu. 123","Neu. 215","Neu. 251","Neu. 133","Neu. 162","Neu. 147","Neu. 161","Neu. 24","Neu. 210","Neu. 148","Neu. 51","Neu. 218","Neu. 41","Neu. 197","Neu. 87","Neu. 219","Neu. 180","Neu. 194","Neu. 167","Neu. 182"]}},"y_range":{"type":"object","name":"DataRange1d","id":"p1101","attributes":{"start":0}},"x_scale":{"type":"object","name":"CategoricalScale","id":"p1110"},"y_scale":{"type":"object","name":"LinearScale","id":"p1111"},"title":{"type":"object","name":"Title","id":"p1102","attributes":{"text":"Feature Neurons Relevant Spikes Ratio"}},"renderers":[{"type":"object","name":"GlyphRenderer","id":"p1143","attributes":{"data_source":{"type":"object","name":"ColumnDataSource","id":"p1137","attributes":{"selected":{"type":"object","name":"Selection","id":"p1138","attributes":{"indices":[],"line_indices":[]}},"selection_policy":{"type":"object","name":"UnionRenderers","id":"p1139"},"data":{"type":"map","entries":[["x",["Neu. 90","Neu. 102","Neu. 209","Neu. 1","Neu. 9","Neu. 2","Neu. 85","Neu. 3","Neu. 5","Neu. 0","Neu. 18","Neu. 25","Neu. 21","Neu. 177","Neu. 107","Neu. 64","Neu. 22","Neu. 116","Neu. 7","Neu. 43","Neu. 10","Neu. 121","Neu. 135","Neu. 235","Neu. 54","Neu. 27","Neu. 52","Neu. 37","Neu. 44","Neu. 42","Neu. 127","Neu. 193","Neu. 137","Neu. 128","Neu. 92","Neu. 152","Neu. 57","Neu. 66","Neu. 13","Neu. 95","Neu. 89","Neu. 8","Neu. 4","Neu. 15","Neu. 17","Neu. 163","Neu. 222","Neu. 12","Neu. 185","Neu. 59","Neu. 203","Neu. 83","Neu. 129","Neu. 62","Neu. 61","Neu. 179","Neu. 238","Neu. 151","Neu. 47","Neu. 39","Neu. 232","Neu. 11","Neu. 63","Neu. 50","Neu. 14","Neu. 67","Neu. 33","Neu. 150","Neu. 120","Neu. 19","Neu. 23","Neu. 40","Neu. 65","Neu. 26","Neu. 16","Neu. 196","Neu. 91","Neu. 73","Neu. 141","Neu. 124","Neu. 125","Neu. 154","Neu. 101","Neu. 6","Neu. 247","Neu. 183","Neu. 123","Neu. 192","Neu. 215","Neu. 28","Neu. 143","Neu. 155","Neu. 60","Neu. 34","Neu. 140","Neu. 36","Neu. 30","Neu. 231","Neu. 20","Neu. 188","Neu. 75","Neu. 251","Neu. 160","Neu. 175","Neu. 48","Neu. 131","Neu. 55","Neu. 74","Neu. 236","Neu. 77","Neu. 133","Neu. 162","Neu. 201","Neu. 207","Neu. 147","Neu. 29","Neu. 105","Neu. 84","Neu. 243","Neu. 38","Neu. 149","Neu. 169","Neu. 104","Neu. 79","Neu. 159","Neu. 161","Neu. 24","Neu. 210","Neu. 72","Neu. 148","Neu. 86","Neu. 98","Neu. 132","Neu. 35","Neu. 51","Neu. 199","Neu. 229","Neu. 218","Neu. 41","Neu. 94","Neu. 213","Neu. 197","Neu. 32","Neu. 191","Neu. 87","Neu. 142","Neu. 117","Neu. 31","Neu. 219","Neu. 198","Neu. 180","Neu. 194","Neu. 167","Neu. 182"]],["top",[25.0,28.57142857142857,33.33333333333333,31.313131313131315,37.5,42.857142857142854,37.17948717948718,31.3953488372093,37.5,25.97402597402597,50.0,35.714285714285715,36.84210526315789,0.0,31.818181818181817,44.44444444444444,30.76923076923077,38.333333333333336,33.33333333333333,10.0,37.5,0.0,30.76923076923077,5.555555555555555,16.666666666666664,36.36363636363637,40.0,42.857142857142854,18.181818181818183,14.285714285714285,15.0,23.52941176470588,31.48148148148148,21.052631578947366,20.0,60.0,26.08695652173913,0.0,26.666666666666668,33.33333333333333,0.0,31.57894736842105,47.72727272727273,82.6086956521739,70.0,40.0,0.0,60.0,0.0,0.0,33.33333333333333,8.333333333333332,0.0,25.0,28.57142857142857,10.0,0.0,25.0,25.0,0.0,0.0,45.45454545454545,0.0,0.0,50.0,0.0,50.0,50.0,66.66666666666666,76.92307692307693,100.0,100.0,66.66666666666666,84.21052631578947,71.42857142857143,0.0,0.0,20.0,11.11111111111111,0.0,30.0,100.0,20.0,40.0,50.0,33.33333333333333,0.0,33.33333333333333,0.0,33.33333333333333,42.857142857142854,50.0,40.0,75.0,75.0,100.0,100.0,100.0,83.33333333333334,100.0,100.0,0.0,28.57142857142857,40.0,75.0,75.0,33.33333333333333,50.0,60.0,80.0,0.0,0.0,75.0,50.0,0.0,100.0,100.0,33.33333333333333,100.0,66.66666666666666,100.0,100.0,100.0,100.0,50.0,0.0,0.0,0.0,25.0,0.0,33.33333333333333,100.0,100.0,50.0,0.0,100.0,66.66666666666666,0.0,0.0,100.0,100.0,0.0,50.0,100.0,0.0,100.0,100.0,100.0,0.0,100.0,0.0,0.0,0.0,0.0]]]}}},"view":{"type":"object","name":"CDSView","id":"p1144","attributes":{"filter":{"type":"object","name":"AllIndices","id":"p1145"}}},"glyph":{"type":"object","name":"VBar","id":"p1140","attributes":{"x":{"type":"field","field":"x"},"width":{"type":"value","value":0.5},"top":{"type":"field","field":"top"},"line_color":{"type":"value","value":"blue"},"fill_color":{"type":"value","value":"blue"},"hatch_color":{"type":"value","value":"blue"}}},"nonselection_glyph":{"type":"object","name":"VBar","id":"p1141","attributes":{"x":{"type":"field","field":"x"},"width":{"type":"value","value":0.5},"top":{"type":"field","field":"top"},"line_color":{"type":"value","value":"blue"},"line_alpha":{"type":"value","value":0.1},"fill_color":{"type":"value","value":"blue"},"fill_alpha":{"type":"value","value":0.1},"hatch_color":{"type":"value","value":"blue"},"hatch_alpha":{"type":"value","value":0.1}}},"muted_glyph":{"type":"object","name":"VBar","id":"p1142","attributes":{"x":{"type":"field","field":"x"},"width":{"type":"value","value":0.5},"top":{"type":"field","field":"top"},"line_color":{"type":"value","value":"blue"},"line_alpha":{"type":"value","value":0.2},"fill_color":{"type":"value","value":"blue"},"fill_alpha":{"type":"value","value":0.2},"hatch_color":{"type":"value","value":"blue"},"hatch_alpha":{"type":"value","value":0.2}}}}}],"toolbar":{"type":"object","name":"Toolbar","id":"p1108","attributes":{"tools":[{"type":"object","name":"PanTool","id":"p1122"},{"type":"object","name":"BoxZoomTool","id":"p1123","attributes":{"overlay":{"type":"object","name":"BoxAnnotation","id":"p1124","attributes":{"syncable":false,"level":"overlay","visible":false,"left":{"type":"number","value":"nan"},"right":{"type":"number","value":"nan"},"top":{"type":"number","value":"nan"},"bottom":{"type":"number","value":"nan"},"left_units":"canvas","right_units":"canvas","top_units":"canvas","bottom_units":"canvas","line_color":"black","line_alpha":1.0,"line_width":2,"line_dash":[4,4],"fill_color":"lightgrey","fill_alpha":0.5}}}},{"type":"object","name":"WheelZoomTool","id":"p1129","attributes":{"renderers":"auto"}},{"type":"object","name":"HoverTool","id":"p1130","attributes":{"renderers":"auto","tooltips":[["Neuron Index","@x"],["Relevant Spike Ratio","@top%"]]}},{"type":"object","name":"UndoTool","id":"p1131"},{"type":"object","name":"RedoTool","id":"p1132"},{"type":"object","name":"ZoomInTool","id":"p1133","attributes":{"renderers":"auto"}},{"type":"object","name":"ZoomOutTool","id":"p1134","attributes":{"renderers":"auto"}},{"type":"object","name":"ResetTool","id":"p1135"},{"type":"object","name":"SaveTool","id":"p1136"}]}},"left":[{"type":"object","name":"LinearAxis","id":"p1117","attributes":{"ticker":{"type":"object","name":"BasicTicker","id":"p1118","attributes":{"mantissas":[1,2,5]}},"formatter":{"type":"object","name":"BasicTickFormatter","id":"p1119"},"axis_label":"Relevant Spike Ratio (%)","major_label_policy":{"type":"object","name":"AllLabels","id":"p1120"}}}],"below":[{"type":"object","name":"CategoricalAxis","id":"p1112","attributes":{"ticker":{"type":"object","name":"CategoricalTicker","id":"p1113"},"formatter":{"type":"object","name":"CategoricalTickFormatter","id":"p1114"},"axis_label":"Feature Neuron Index","major_label_policy":{"type":"object","name":"AllLabels","id":"p1115"}}}],"center":[{"type":"object","name":"Grid","id":"p1116","attributes":{"axis":{"id":"p1112"},"grid_line_color":null}},{"type":"object","name":"Grid","id":"p1121","attributes":{"dimension":1,"axis":{"id":"p1117"}}}]}}]}}
+    </script>
+    <script type="text/javascript">
+      (function() {
+        const fn = function() {
+          Bokeh.safely(function() {
+            (function(root) {
+              function embed_document(root) {
+              const docs_json = document.getElementById('p1146').textContent;
+              const render_items = [{"docid":"a6a1eaf8-f346-4829-b28c-882af0921510","roots":{"p1099":"a3e0cd76-d3db-42c4-a2ab-25a98cd5493f"},"root_ids":["p1099"]}];
+              root.Bokeh.embed.embed_items(docs_json, render_items);
+              }
+              if (root.Bokeh !== undefined) {
+                embed_document(root);
+              } else {
+                let attempts = 0;
+                const timer = setInterval(function(root) {
+                  if (root.Bokeh !== undefined) {
+                    clearInterval(timer);
+                    embed_document(root);
+                  } else {
+                    attempts++;
+                    if (attempts > 100) {
+                      clearInterval(timer);
+                      console.log("Bokeh: ERROR: Unable to run BokehJS code because BokehJS library is missing");
+                    }
+                  }
+                }, 10, root)
+              }
+            })(window);
+          });
+        };
+        if (document.readyState != "loading") fn();
+        else document.addEventListener("DOMContentLoaded", fn);
+      })();
+    </script>
+  </body>
+</html>

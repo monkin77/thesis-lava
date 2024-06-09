@@ -40,8 +40,9 @@ class MarkerType:
 
 class BaselineAlgorithm:
     """Enum for the different types of baseline algorithms"""
-    MEDIAN = "q1"
+    Q1 = "q1"
     MEAN = "mean"
+    MEDIAN = "median"
 
 
 # Auxiliar method to check if the label has an HFO event
