@@ -559,5 +559,100 @@ class ConfigTimeConstantsLIF(AbstractConfigTimeConstantsLIF):
 
         # Add the vth variable to the process
         self.vth = Var(shape=(1,), init=vth)
+
+class ConfigTimeConstantsRefractoryLIF(ConfigTimeConstantsLIF):
+    """Configurable Time-Constants Refractory Leaky-Integrate-and-Fire (LIF) neural Process.
+
+    LIF dynamics abstracts to:
+    u_exc[t] = u_exc[t-1] * (1-du_exc) + a_in (excitatory spike)         # neuron excitatory current
+    u_inh[t] = u_inh[t-1] * (1-du_inh) + a_in (inhibitory spike)        # neuron inhibitory current
+
+    u[t] = u_exc[t] + u_inh[t]                               # neuron total current (u_inh[t] is negative)
+    v[t] = v[t-1] * (1-dv) + u[t] + bias  # neuron voltage
+    s_out = v[t] > vth                    # spike if threshold is exceeded
+    v[t] = 0                              # reset at spike
+
+    Parameters
+    ----------
+    shape : tuple(int)
+        Number and topology of LIF neurons.
+    u_exc : float, list, numpy.ndarray, optional
+        Initial value of the neurons' excitatory current.
+    u_inh : float, list, numpy.ndarray, optional
+        Initial value of the neurons' inhibitory current.
+    v : float, list, numpy.ndarray, optional
+        Initial value of the neurons' voltage (membrane potential).
+    du_exc : float, list, numpy.ndarray, optional
+        Inverse of decay time-constant for excitatory current decay. This can be a scalar, list,
+        or numpy array. Anyhow, it will be converted to a np array representing the 
+        time-constants of each neuron.
+    du_inh : float, list, numpy.ndarray, optional
+        Inverse of decay time-constant for inhibitory current decay. This can be a scalar, list,
+        or numpy array. Anyhow, it will be converted to a np array representing the 
+        time-constants of each neuron.
+    dv : float, list, numpy.ndarray, optional
+        Inverse of decay time-constant for voltage decay. This can be a scalar, list,
+        or numpy array. Anyhow, it will be converted to a np array representing the 
+        time-constants of each neuron.
+    bias_mant : float, list, numpy.ndarray, optional
+        Mantissa part of neuron bias.
+    bias_exp : float, list, numpy.ndarray, optional
+        Exponent part of neuron bias, if needed. Mostly for fixed point
+        implementations. Ignored for floating point implementations.
+    vth : float, optional
+        Neuron threshold voltage, exceeding which, the neuron will spike.
+        Currently, only a single threshold can be set for the entire
+        population of neurons.
+
+    Example
+    -------
+    >>> config_lif = ConfigTimeConstantsLIF(shape=(200, 15), du=10, dv=5)
+    This will create 200x15 LIF neurons that all have the same current decay
+    of 10 and voltage decay of 5.
+    """
+    def __init__(
+            self,
+            *,
+            shape: ty.Tuple[int, ...],
+            v: ty.Union[float, list, np.ndarray],
+            u_exc: ty.Union[float, list, np.ndarray] = 0,
+            u_inh: ty.Union[float, list, np.ndarray] = 0,
+            du_exc: ty.Optional[ty.Union[float, list, np.ndarray]] = 0,
+            du_inh: ty.Optional[ty.Union[float, list, np.ndarray]] = 0,
+            dv: ty.Optional[ty.Union[float, list, np.ndarray]] = 0,
+            bias_mant: ty.Optional[ty.Union[float, list, np.ndarray]] = 0,
+            bias_exp: ty.Optional[ty.Union[float, list, np.ndarray]] = 0,
+            vth: ty.Optional[float] = 10,
+            refractory_period: ty.Optional[int] = 1,
+            name: ty.Optional[str] = None,
+            log_config: ty.Optional[LogConfig] = None,
+            **kwargs,
+    ) -> None:
+        super().__init__(
+            shape=shape,
+            u_exc=u_exc,
+            u_inh=u_inh,
+            v=v,
+            du_exc=du_exc,
+            du_inh=du_inh,
+            dv=dv,
+            bias_mant=bias_mant,
+            bias_exp=bias_exp,
+            vth=vth,
+            name=name,
+            log_config=log_config,
+            **kwargs,
+        )
+
+        # Validate the refractory period
+        if refractory_period < 1:   # TODO: Change to 0
+            raise ValueError("Refractory period must be > 0.")
+        # Check if the refractory period is a float
+        if isinstance(refractory_period, float):
+            print("Refractory period must be an integer. Converting to integer...")
+            refractory_period = int(refractory_period)
+
+        self.proc_params["refractory_period"] = refractory_period
+        self.refractory_period_end = Var(shape=shape, init=0)
         
         

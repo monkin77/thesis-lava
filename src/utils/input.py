@@ -86,6 +86,21 @@ def band_to_file_name(band: MarkerType):
     else:
         return "unknown"
     
+def band_to_confidence_window(band: MarkerType):
+    """
+    This function returns the confidence window for the band.
+    If the band is unknown, it returns 0.
+    @band (MarkerType): The band to get the confidence window for.
+    """
+    if band == MarkerType.RIPPLE:
+        return RIPPLE_CONFIDENCE_WINDOW
+    elif band == MarkerType.FAST_RIPPLE:
+        return FR_CONFIDENCE_WINDOW
+    elif band == MarkerType.BOTH:
+        return BOTH_CONFIDENCE_WINDOW
+    else:
+        raise ValueError("Unknown band type on band_to_confidence_window()")
+    
 
 SAMPLING_RATE = 2048    # 2048 Hz
 INPUT_DURATION_S = 120    # 120 seconds
