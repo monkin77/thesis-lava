@@ -44,6 +44,8 @@ class BaselineAlgorithm:
     MEAN = "mean"
     MEDIAN = "median"
     Q3 = "q3"
+    SIXTY_PERC = "60perc"
+    SEVENTY_PERC = "70perc"
 
 
 # Auxiliar method to check if the label has an HFO event
@@ -100,3 +102,5 @@ class ModelDistStrategy:
     """Enum for the Selected Distribution Strategy"""
     IQR = 0
     MEAN_AND_STD = 1
+    LOG_NORMAL = 2  # https://planetcalc.com/7264/ and https://www.omnicalculator.com/statistics/lognormal-distribution
+                    
