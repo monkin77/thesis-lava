@@ -33,8 +33,20 @@ def voltage_pred(time, du, dv, spike_times, record_times,
         curr_u = curr_u * (1-du) + spike_inc
         curr_v = curr_v * (1-dv) + curr_u
 
-        if (time_step-1) in record_times or time_step in record_times:
-            recorded_times.append(curr_v)
+        if time_step+1 in record_times:
+            voltage_tuple = (curr_v, curr_v, curr_v)    # (v[t-1], v[t], v_max)
+            recorded_times.append(voltage_tuple)
+        elif time_step in record_times:
+            recorded_times[-1] = (recorded_times[-1][0], curr_v, recorded_times[-1][2])      # Update the v(t) voltage
+            finding_v_max = True
+            curr_v_max = curr_v    # Set the current max voltage for this spike
+        elif finding_v_max:
+            if curr_v > curr_v_max:
+                curr_v_max = curr_v
+            elif curr_v <= curr_v_max:
+                recorded_times[-1] = (recorded_times[-1][0], recorded_times[-1][1], curr_v_max)      # Update the v(t) voltage
+                finding_v_max = False
+                curr_v_max = 0
     
     return recorded_times
 
@@ -43,13 +55,13 @@ class CUBADynamicsResult:
     '''
     A class to represent an Result of the CUBA Dynamics Analysis
     '''
-    def __init__(self, spike_weight, du, dv, bef_spike_v, spike_v, after_spike_v):
+    def __init__(self, spike_weight, du, dv, bef_spike_v, spike_v, max_spike_v):
         self.spike_weight = spike_weight
         self.du = du
         self.dv = dv
         self.bef_spike_v = bef_spike_v
         self.spike_v = spike_v
-        self.after_spike_v = after_spike_v
+        self.max_spike_v = max_spike_v
 
     def to_key(self):
         return f"{self.spike_weight}_{self.du}_{self.dv}"
@@ -66,7 +78,7 @@ class CUBADynamicsResult:
             "dv": self.dv,
             "before v": self.bef_spike_v,
             "spike v": self.spike_v,
-            "after v": self.after_spike_v
+            "max v": self.max_spike_v
         }
     
     # Define method to print the object when printed
