@@ -87,7 +87,7 @@ class LIFFixedParams:
     
 
 def float2fixed_lif_parameter(lif_params) -> LIFFixedParams:
-    '''Float- to fixed-point mapping for LIF parameters.
+    '''Float-to-fixed-point mapping for LIF parameters.
     
     Parameters
     ---------
@@ -106,32 +106,34 @@ def float2fixed_lif_parameter(lif_params) -> LIFFixedParams:
     # Find the optimal fixed-point representation for each parameter.
 
     # Bias parameter
-    bias_mant_bits = lif_params['bias']['bits']
-    scaled_bias = scaling_funct(lif_params['bias']['val'])[0]
-    bias_exp = int(np.ceil(np.log2(scaled_bias) - bias_mant_bits + 1))
-    if bias_exp <=0:
-        bias_exp = 0
+    # bias_mant_bits = lif_params['bias']['bits']
+    # scaled_bias = scaling_funct(lif_params['bias']['val'])[0]
+    # bias_exp = int(np.ceil(np.log2(scaled_bias) - bias_mant_bits + 1))
+    # if bias_exp <=0:
+    #     bias_exp = 0
     
     # Weights parameter
     weight_mant_bits = lif_params['weights']['bits']    
     scaled_weights = np.round(scaling_funct(lif_params['weights']['val']))
-    weight_exp = int(np.ceil(np.log2(scaled_bias) - weight_mant_bits + 1))
-    weight_exp = np.max(weight_exp) - 6
-    if weight_exp <=0:
-        diff = weight_exp
-        weight_exp = 0
+    # Check if we need this?
+    weights_exp = 0
+    # weight_exp = int(np.ceil(np.log2(scaled_bias) - weight_mant_bits + 1))
+    # weight_exp = np.max(weight_exp) - 6
+    # if weight_exp <=0:
+    #     diff = weight_exp
+    #     weight_exp = 0
 
     # Convert the scaled parameters to fixed-point representation.
-    bias_mant = int(scaled_bias // 2**bias_exp)
+    # bias_mant = int(scaled_bias // 2**bias_exp)
     weights = scaled_weights.astype(np.int32)
     
     # Build an object with fixed-point parameters.
     lif_params_fixed = LIFFixedParams(
         v_th=int(scaling_funct(lif_params['vth']['val']) // 2**lif_params['vth']['shift'][0]),
-        bias_mant=bias_mant,
-        bias_exp=bias_exp,
+        bias_mant=0,
+        bias_exp=0,
         weights=np.round(scaled_weights / (2 ** lif_params['weights']['shift'][0])).astype(np.int32),
-        weight_exp=weight_exp
+        weight_exp=weights_exp
     )
     
     return lif_params_fixed
