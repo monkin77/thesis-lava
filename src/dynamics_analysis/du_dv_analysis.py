@@ -9,7 +9,8 @@ def voltage_pred(time, du, dv, spike_times, record_times,
     @param time: the time step at which the voltage is to be calculated
     @param du: The inverse of the synaptic membrane time constant
     @param dv: The inverse of the membrane potential time constant
-    @param record_times: The times at which the voltage is to be recorded
+    @param record_times: The important times. The voltage will be recorded at
+      each (t-1, t, max(t) before falling again)
     @param spike_times: The times at which the neuron spikes
     @param spike_weight The weight of the spikes
 
@@ -21,6 +22,10 @@ def voltage_pred(time, du, dv, spike_times, record_times,
     curr_u = u_init
     curr_v = v_init
     recorded_times = []
+
+    finding_v_max = False   # Flag to indicate if we are finding the max voltage after a spike
+    curr_v_max = 0          # The current max voltage after a spike
+    
     for time_step in range(0, time+1, 1):
         # print("Updating time step", time_step)
         spike_inc = spike_weight if time_step in spike_times else 0
@@ -28,7 +33,7 @@ def voltage_pred(time, du, dv, spike_times, record_times,
         curr_u = curr_u * (1-du) + spike_inc
         curr_v = curr_v * (1-dv) + curr_u
 
-        if time_step in record_times:
+        if (time_step-1) in record_times or time_step in record_times:
             recorded_times.append(curr_v)
     
     return recorded_times
