@@ -51,7 +51,7 @@ def find_channel_bursts(spike_events, num_spikes_to_burst, max_burst_duration,
                 last_ch_burst = curr_ch_bursts[-1][0]
                 # print("last ch burst:", last_ch_burst)
                 if (curr_spikes[ch_id][0] - last_ch_burst) <= min_inter_burst_interval:
-                    print("Skipping burst as distance < min_inter_burst_interval")
+                    # print("Skipping burst as distance < min_inter_burst_interval")
                     continue
 
             # Add the burst to the list of channel bursts
