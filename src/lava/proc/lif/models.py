@@ -503,6 +503,136 @@ class PyLifRefractoryModelFloat(AbstractPyLifModelFloat):
         self.s_out.send(s_out)
 
 
+@implements(proc=LIFRefractory, protocol=LoihiProtocol)
+@requires(CPU)
+@tag("bit_accurate_loihi", "fixed_pt")
+class PyLifRefractoryModelBitAcc(AbstractPyLifModelFixed):
+    """Implementation of Leaky-Integrate-and-Fire neural process with refractory
+    period in bit-accurate precision with Loihi's hardware LIF dynamics, 
+    which means, it mimics Loihi behaviour.
+
+    Precisions of state variables
+
+    - du: unsigned 12-bit integer (0 to 4095)
+    - dv: unsigned 12-bit integer (0 to 4095)
+    - bias_mant: signed 13-bit integer (-4096 to 4095). Mantissa part of neuron
+      bias.
+    - bias_exp: unsigned 3-bit integer (0 to 7). Exponent part of neuron bias.
+    - vth: unsigned 17-bit integer (0 to 131071).
+
+    """
+
+    s_out: PyOutPort = LavaPyType(PyOutPort.VEC_DENSE, np.int32, precision=24)
+    vth: int = LavaPyType(int, np.int32, precision=17)
+    refractory_period_end: np.ndarray = LavaPyType(np.ndarray, np.int32, precision=24)
+
+    def __init__(self, proc_params):
+        super(PyLifRefractoryModelBitAcc, self).__init__(proc_params)
+        self.effective_vth = 0
+
+        self.refractory_period = proc_params["refractory_period"]
+        # self.reset_interval = proc_params["reset_interval"]
+        # self.reset_offset = (proc_params["reset_offset"]) % self.reset_interval
+
+    def scale_threshold(self):
+        """Scale threshold according to the way Loihi hardware scales it. In
+        Loihi hardware, threshold is left-shifted by 6-bits to MSB-align it
+        with other state variables of higher precision.
+        """
+        self.effective_vth = np.left_shift(self.vth, self.vth_shift)
+        self.isthrscaled = True
+
+    def spiking_activation(self):
+        """Spike when voltage exceeds threshold."""
+        return self.v > self.effective_vth
+
+    def subthr_dynamics(self, activation_in: np.ndarray):
+        """Sub-threshold dynamics of current and voltage variables for
+        all refractory LIF models. This is where the 'leaky integration'
+        happens.
+        """
+        # TODO: Validate
+        # Update current
+        # --------------
+        decay_const_u = self.du + self.ds_offset
+        # Below, u is promoted to int64 to avoid overflow of the product
+        # between u and decay constant beyond int32. Subsequent right shift by
+        # 12 brings us back within 24-bits (and hence, within 32-bits)
+        decayed_curr = np.int64(self.u) * (self.decay_unity - decay_const_u)
+        decayed_curr = np.sign(decayed_curr) * np.right_shift(
+            np.abs(decayed_curr), self.decay_shift
+        )
+        decayed_curr = np.int32(decayed_curr)
+        # Hardware left-shifts synaptic input for MSB alignment
+        activation_in = np.left_shift(activation_in, self.act_shift)
+        # Add synptic input to decayed current
+        decayed_curr += activation_in
+        # Check if value of current is within bounds of 24-bit. Overflows are
+        # handled by wrapping around modulo 2 ** 23. E.g., (2 ** 23) + k
+        # becomes k and -(2**23 + k) becomes -k
+        wrapped_curr = np.where(
+            decayed_curr > self.max_uv_val,
+            decayed_curr - 2 * self.max_uv_val,
+            decayed_curr,
+        )
+        wrapped_curr = np.where(
+            wrapped_curr <= -self.max_uv_val,
+            decayed_curr + 2 * self.max_uv_val,
+            wrapped_curr,
+        )
+        self.u[:] = wrapped_curr
+
+        # Update voltage
+        # --------------
+        # Check if the neuron is in refractory period
+        non_refractory = self.refractory_period_end < self.time_step
+        
+        decay_const_v = self.dv + self.dm_offset
+
+        neg_voltage_limit = -np.int32(self.max_uv_val) + 1
+        pos_voltage_limit = np.int32(self.max_uv_val) - 1
+        # Decaying voltage similar to current. See the comment above to
+        # understand the need for each of the operations below.
+        decayed_volt = np.int64(self.v[non_refractory]) * (self.decay_unity - decay_const_v)
+        decayed_volt = np.sign(decayed_volt) * np.right_shift(
+            np.abs(decayed_volt), self.decay_shift
+        )
+        decayed_volt = np.int32(decayed_volt)
+        # effective_bias is an array of the same shape as v apparently
+        updated_volt = decayed_volt + self.u[non_refractory] + self.effective_bias[non_refractory]
+        self.v[non_refractory] = np.clip(updated_volt, neg_voltage_limit, pos_voltage_limit)
+        
+    def process_spikes(self, spike_vector: np.ndarray):
+        # TODO: Edit
+        self.refractory_period_end[spike_vector] = (self.time_step
+                                                    + self.refractory_period)
+        super().reset_voltage(spike_vector)
+
+    def run_spk(self):
+        """The run function that performs the actual computation during
+        execution orchestrated by a PyLoihiProcessModel using the
+        LoihiProtocol.
+        """
+        # Receive synaptic input
+        a_in_data = self.a_in.recv()
+
+        # # Compute effective bias and threshold only once, not every time-step
+        # if not self.isbiasscaled:
+        self.scale_bias()
+
+        if not self.isthrscaled:
+            self.scale_threshold()
+
+        self.subthr_dynamics(activation_in=a_in_data)
+
+        s_out = self.spiking_activation()
+
+        # Reset voltage of spiked neurons to 0
+        self.process_spikes(spike_vector=s_out)
+
+        self.s_out.send(s_out)        
+
+
 @implements(proc=LearningLIF, protocol=LoihiProtocol)
 @requires(CPU)
 @tag("bit_accurate_loihi", "fixed_pt")
