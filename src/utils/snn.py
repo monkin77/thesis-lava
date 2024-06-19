@@ -55,3 +55,4 @@ def marker_type_to_neuron_class(marker_type: MarkerType) -> NeuronClass:
         return NeuronClass.BOTH
     else:
         return NeuronClass.NOISY
+
