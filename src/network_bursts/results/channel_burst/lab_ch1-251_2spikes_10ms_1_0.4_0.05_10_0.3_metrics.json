@@ -1,0 +1,15 @@
+{
+    "causality_window": 10,
+    "metrics": {
+        "true_positive": 45,
+        "false_positive": 0,
+        "true_negative": 2954,
+        "false_negative": 1,
+        "total_predictions": 3000,
+        "accuracy": 99.96666666666667,
+        "precision": 100.0,
+        "recall": 97.82608695652173,
+        "f1_score": 98.90109890109889,
+        "specificity": 100.0
+    }
+}
