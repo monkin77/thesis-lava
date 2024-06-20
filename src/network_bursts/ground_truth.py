@@ -71,4 +71,76 @@ def find_channel_bursts(spike_events, num_spikes_to_burst, max_burst_duration,
 
     return channel_bursts, channel_bursts_detailed
 
-        
+
+def find_net_bursts(spike_events, num_spikes_to_burst, max_burst_duration, 
+                        min_inter_burst_interval, verbose=False):
+    '''
+    Find Network Bursts in the spike events data of Channel Bursts
+    
+    Parameters
+    ----------
+    spike_events : np.ndarray
+        List of spike events (time_step, channel_id)
+    num_spikes_to_burst : int
+        Number of spikes to consider as a burst
+    max_burst_duration : int
+        Max Time from the first spike in the burst to the last spike in the burst to consider as a burst
+    min_inter_burst_interval : int
+        Minimum Time between two bursts to consider as different bursts
+    verbose : bool
+
+
+    Returns
+    -------
+    net_bursts : np.ndarray [time_step]
+    net_bursts_detailed : np.ndarray [(time_step, channels in the burst)]
+    '''
+    net_bursts = []
+    net_bursts_detailed = []
+
+    # Set to store the channels that spiked in [time_step - max_burst_duration, time_step]
+    # Stores a tuple (time_step, channel_id)
+    curr_spiking_channels = set()
+    for idx, (spike_time, ch_id) in enumerate(spike_events):
+        if verbose:
+            print(f"Processing spike {spike_time} from channel {ch_id}")
+
+        # Update the current spikes map for each channel
+        remove_ch = []
+        for (ch_spike_time, ch) in curr_spiking_channels:
+            # Remove the spikes that are outside the max_burst_duration
+            if (spike_time - ch_spike_time > max_burst_duration):
+                remove_ch.append((ch_spike_time, ch))
+        # Remove the spikes that are outside the max_burst_duration
+        for ch_spike_time, ch in remove_ch:
+            curr_spiking_channels.remove((ch_spike_time, ch))
+
+        # Add the current spike to the set of spikes that are within the max_burst_duration
+        curr_spiking_channels.add((spike_time, ch_id))
+
+        # Check if the current time step has enough channels spiking to consider as a network burst
+        if len(curr_spiking_channels) >= num_spikes_to_burst:
+            # Check if the first spike in the burst is distanced enough from the last burst (min_inter_burst_interval)
+            last_net_burst = None
+            if len(net_bursts) > 0:
+                last_net_burst = net_bursts[-1]     # Get the last network burst
+
+                # Get the first channel spike of the current network burst
+                curr_first_ch_spike = min(map(lambda x: x[0], curr_spiking_channels))
+                if (curr_first_ch_spike - last_net_burst) <= min_inter_burst_interval:
+                    # Skip the current burst as the distance between the NB and th
+                    # print("Skipping burst as distance < min_inter_burst_interval")
+                    continue
+            
+            # Add the burst to the list of network bursts
+            # Get the last channel spike of the current network burst
+            curr_last_ch_spike = max(map(lambda x: x[0], curr_spiking_channels))
+            net_bursts.append(curr_last_ch_spike)
+            net_bursts_detailed.append( (curr_last_ch_spike, list( map(lambda x: x[1], curr_spiking_channels) )) )
+
+            # Clear the current spikes for the channel
+            curr_spiking_channels = set()
+
+        # print(f"curr_spikes: {curr_spikes}")
+
+    return net_bursts, net_bursts_detailed
