@@ -1,7 +1,7 @@
 import math
 import numpy as np
 
-def get_intersection_parameter_combinations(padding_time, max_spacing, sim_time, num_spikes,
+def get_intersection_parameter_combinations(padding_time, max_spacing, sim_time, num_spikes, num_consec_spikes = None,
                                            consec_spikes_spacing = None, two_consec_spacing = None, v_th = 1.0, verbose = True):
     '''
     Get the intersection of the relevant results for the simulation of the CUBA LIF Neuron Dynamics, where:
@@ -18,7 +18,7 @@ def get_intersection_parameter_combinations(padding_time, max_spacing, sim_time,
     v_th: The threshold voltage
     verbose: Whether to print the results
     '''
-    CHECK_COND3 = consec_spikes_spacing is not None
+    CHECK_COND3 = consec_spikes_spacing is not None and num_consec_spikes is not None
     CHECK_COND4 = two_consec_spacing is not None
 
     # Fixed Parameters
@@ -126,7 +126,7 @@ def get_intersection_parameter_combinations(padding_time, max_spacing, sim_time,
     if CHECK_COND3:
         # Let's now see condition 3 (Consecutive Spikes)
         # Fixed Parameters
-        num_consecutive_spikes = num_spikes - 1
+        num_consecutive_spikes = num_consec_spikes
 
         consecutive_spike_times = [spike_idx*consec_spikes_spacing for spike_idx in range(0, num_consecutive_spikes)]
             
