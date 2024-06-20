@@ -38,7 +38,7 @@ def get_intersection_parameter_combinations(padding_time, max_spacing, sim_time,
     recording_times = [spike_times[-1]]         # The time step of interest is the step of the last stimuli before the burst
 
     # Explorable Parameters
-    SPIKE_WEIGHTS = [0.05 * i for i in range(1, 14)]
+    SPIKE_WEIGHTS = [0.05 * i for i in range(1, 20)]
     DU_VALS = [0.05 * i for i in range(1, 20)]
     DV_VALS = [0.05 * i for i in range(1, 20)]
 
@@ -100,9 +100,9 @@ def get_intersection_parameter_combinations(padding_time, max_spacing, sim_time,
 
     # Find the results where the Voltage is below v_th (i.e. no spike occurs)
     relevant_results2 = [result for result in results_cond2 if (
-        result.bef_spike_v <= v_th and 
-        result.spike_v <= v_th and
-        result.max_spike_v <= v_th
+        result.bef_spike_v < v_th and 
+        result.spike_v < v_th and
+        result.max_spike_v < v_th
         )]
 
     # Sort the relevant results from highest max voltage to lowest
@@ -149,9 +149,9 @@ def get_intersection_parameter_combinations(padding_time, max_spacing, sim_time,
 
         # Find the results where the Voltage is below v_th (i.e. no spike occurs)
         relevant_results3 = [result for result in results_cond3 if (
-            result.bef_spike_v <= v_th and 
-            result.spike_v <= v_th and
-            result.max_spike_v <= v_th
+            result.bef_spike_v < v_th and 
+            result.spike_v < v_th and
+            result.max_spike_v < v_th
             )]
 
         # Sort the relevant results from highest max voltage to lowest
@@ -206,9 +206,9 @@ def get_intersection_parameter_combinations(padding_time, max_spacing, sim_time,
 
         # Find the results where the Voltage is below v_th (i.e. no spike occurs)
         relevant_results4 = [result for result in results_cond4 if (
-            result.bef_spike_v <= v_th and 
-            result.spike_v <= v_th and
-            result.max_spike_v <= v_th
+            result.bef_spike_v < v_th and 
+            result.spike_v < v_th and
+            result.max_spike_v < v_th
             )]
 
         # Sort the relevant results from highest max voltage to lowest

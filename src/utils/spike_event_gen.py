@@ -52,10 +52,10 @@ class PySpikeEventGenModel(PyLoihiProcessModel):
         
         self.channel_map = self.proc_params["channel_map"]
 
-        print("SpikeEventGen Model Parameters: ")
-        print("init_offset:", self.init_offset)
-        print("virtual_time_step_interval:", self.virtual_time_step_interval)
-        print("channel_map:", self.channel_map)
+        # print("SpikeEventGen Model Parameters: ")
+        # print("init_offset:", self.init_offset)
+        # print("virtual_time_step_interval:", self.virtual_time_step_interval)
+        # print("channel_map:", self.channel_map)
 
     def run_spk(self) -> None:
         spike_data = np.zeros(self.s_out.shape) # Initialize the spike data to 0
