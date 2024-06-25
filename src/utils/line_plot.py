@@ -9,7 +9,7 @@ from math import ceil
 curdoc().theme = "caliber"  # Can be one of "caliber", "dark_minimal", "light_minimal", "night_sky", "contrast"
 
 # colors list
-line_colors = ["green", "blue", "red", "orange", "purple", "black", "cyan", "pink", "brown", "mediumaquamarine", "teal", "olive", "darkgreen", 
+line_colors = ["green", "blue", "red", "orange", "purple", "cyan", "pink", "brown", "mediumaquamarine", "teal", "olive", "darkgreen", "black", 
                "mediumslateblue", "lightsalmon", "gold", "indigo", "aqua", "rosybrown", "chocolate"]  # TODO: Add more colors if needed
 
 # --------------------------------------------------------- #
