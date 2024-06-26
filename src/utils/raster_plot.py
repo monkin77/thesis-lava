@@ -28,8 +28,8 @@ Returns:
     bplt.Figure: The plot
 """
 def create_raster_fig(title, x_axis_label, y_axis_label, 
-               x, y, dot_size=10,
-               sizing_mode=None, tools=None, tooltips=None, box_annotation_params=None):
+               x, y, dot_size=10, sizing_mode=None, tools=None, 
+               tooltips=None, box_annotation_params=None, y_axis_ticker=None):
     # Create the plot
     p = bplt.figure(
         title=title,
@@ -47,6 +47,11 @@ def create_raster_fig(title, x_axis_label, y_axis_label,
     # Axis settings
     p.xaxis.formatter = BasicTickFormatter(use_scientific=False)
 
+    # Set y-axis to integers
+    if y_axis_ticker is not None:
+        p.yaxis.ticker = y_axis_ticker
+
+
     # Grid settings
     # p.ygrid.grid_line_color = "red"
 
@@ -61,6 +66,10 @@ def create_raster_fig(title, x_axis_label, y_axis_label,
             fill_color=box_annotation_params["fill_color"]
         )
         p.add_layout(inner_box)
+
+    # Change the number of decimal places on hover
+    p.hover.formatters = {'@x': 'numeral', '@y': 'numeral'}
+    p.hover.tooltips = [("x", "@x{0.0}"), ("y", "@y{0.0000}")]
 
     # Return the plot
     return p
