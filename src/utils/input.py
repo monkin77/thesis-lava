@@ -62,6 +62,11 @@ def label_has_ripple(label):
     This function checks if the label has a Ripple.
     @label (str): Label of the marker.
     """
+    # Ensure the "Ripple" is not part of the "Fast-Ripple
+    if "Fast-Ripple" in label:
+        # Remove the "Fast-Ripple" from the label
+        label = label.replace("Fast-Ripple", "")
+    
     return "Ripple" in label
 
 # Auxiliar method to check if the label has a Fast Ripple
@@ -72,17 +77,21 @@ def label_has_fast_ripple(label):
     """
     return "Fast-Ripple" in label
 
+RIPPLE_BAND_FILENAME = "ripple"
+FR_BAND_FILENAME = "fr"
+BOTH_BAND_FILENAME = "hfo"
+
 def band_to_file_name(band: MarkerType):
     """
     This function returns the file name for the band.
     @band (MarkerType): The band to get the file name for.
     """
     if band == MarkerType.RIPPLE:
-        return "ripple"
+        return RIPPLE_BAND_FILENAME
     elif band == MarkerType.FAST_RIPPLE:
-        return "fr"
+        return FR_BAND_FILENAME
     elif band == MarkerType.BOTH:
-        return "both"
+        return BOTH_BAND_FILENAME
     else:
         return "unknown"
     
