@@ -67,6 +67,9 @@ def label_has_ripple(label):
     if "Fast-Ripple" in label:
         # Remove the "Fast-Ripple" from the label
         label = label.replace("Fast-Ripple", "")
+    if "Fast Ripple" in label:
+        # Remove the "Fast Ripple" from the label
+        label = label.replace("Fast Ripple", "")
     
     return "Ripple" in label
 
@@ -76,7 +79,7 @@ def label_has_fast_ripple(label):
     This function checks if the label has a Fast Ripple.
     @label (str): Label of the marker.
     """
-    return "Fast-Ripple" in label
+    return "Fast-Ripple" in label or "Fast Ripple" in label
 
 RIPPLE_BAND_FILENAME = "ripple"
 FR_BAND_FILENAME = "fr"
