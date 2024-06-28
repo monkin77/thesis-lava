@@ -45,6 +45,7 @@ class BaselineAlgorithm:
     MEDIAN = "median"
     Q3 = "q3"
     SIXTY_PERC = "60perc"
+    SIXTY_FIVE_PERC = "65perc"
     SEVENTY_PERC = "70perc"
 
 
