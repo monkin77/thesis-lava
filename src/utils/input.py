@@ -122,9 +122,9 @@ NUM_SAMPLES = SAMPLING_RATE * INPUT_DURATION_S  # 2048 samples per second for 12
 
 X_STEP = 1/SAMPLING_RATE * (10**3)  # 0.48828125 ms
 
-RIPPLE_CONFIDENCE_WINDOW = 120  # Let's give a 120ms window after the Ripple to consider as part of the event
-FR_CONFIDENCE_WINDOW = 60  # Let's give a 60ms window after the Fast Ripple to consider as part of the event    (TODO: Could be changed)
-BOTH_CONFIDENCE_WINDOW = 120  # Let's give a 120ms window after the HFO event (Ripple or Fast Ripple) insertion to consider as part of the event
+RIPPLE_CONFIDENCE_WINDOW = 180  # 120  # Let's give a 120ms window after the Ripple to consider as part of the event
+FR_CONFIDENCE_WINDOW = 80   # 60  # Let's give a 60ms window after the Fast Ripple to consider as part of the event    (TODO: Could be changed)
+BOTH_CONFIDENCE_WINDOW = 180    # 120  # Let's give a 120ms window after the HFO event (Ripple or Fast Ripple) insertion to consider as part of the event
 
 class ModelDistStrategy:
     """Enum for the Selected Distribution Strategy"""
