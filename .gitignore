@@ -146,3 +146,5 @@ dmypy.json
 .idea/
 .vscode/
 .history/
+.flakeheaven_cache/
+tutorials/in_depth/results/
