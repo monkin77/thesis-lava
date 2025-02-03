@@ -104,10 +104,14 @@ def _nir_node_to_lava(node: nir.NIRNode, import_config: ImportConfig):
         dv = dt / tau_mem
         du = dt / tau_syn
 
+        # Get the number of neurons
+        num_neurons = node.num_neurons
+
         vthr = node.v_threshold  # * 10
         # correction for input weights
         correction = dt / node.tau_mem
-        w = np.ones((1, 1))
+        # TODO: Check if this is correct
+        w = np.eye(num_neurons).astype(float) # Create a diagonal matrix with the number of neurons (1-1 connections?)
         w *= correction # TODO: What is this correction for? keeping it the same as LIF
 
         if import_config.fixed_pt:
@@ -117,7 +121,7 @@ def _nir_node_to_lava(node: nir.NIRNode, import_config: ImportConfig):
             w = (w * 256).astype(np.int32)
 
         lif = LIF(
-            shape=(1,), # u=0., # v=0., # TODO: Is this fixed to 1 neuron???
+            shape=(num_neurons,), # u=0., # v=0., # TODO: Is this fixed to 1 neuron???
             du=du,
             dv=dv,
             vth=vthr,
@@ -148,9 +152,11 @@ def _nir_node_to_lava(node: nir.NIRNode, import_config: ImportConfig):
         return dense
 
     elif isinstance(node, nir.Input):
+        # Input Nodes are not converted to Lava nodes
         return None
 
     elif isinstance(node, nir.Output):
+        # Output Nodes are not converted to Lava nodes
         return None
 
     else:
