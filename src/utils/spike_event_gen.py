@@ -106,3 +106,91 @@ class PySpikeEventGenModel(PyLoihiProcessModel):
         # TODO: Should it be another process that stops the simulation? Such as the last LIF process
         # if self.curr_spike_idx >= 5: # len(self.spike_events):
         #    self.pause()
+
+
+
+
+
+class SpikeEventGen_v2(AbstractProcess):
+    """Input Process that generates spike events based on the input file
+    This is the Version 2, where the input is given by a numpy array of spike events
+
+    Args:
+        @out_shape (tuple): Shape of the output port
+        @spike_events (np.ndarray): Array of spike events of shape: (num_channels, num_events_per_ch)
+        @name (str): Name of the process
+    """
+    def __init__(self, out_shape: tuple, spike_events: np.ndarray, name: str,
+                 init_offset=0, virtual_time_step_interval=1) -> None:
+        super().__init__(name=name)
+        self.s_out = OutPort(shape=out_shape)
+
+        self.spike_events = Var(shape=spike_events.shape, init=spike_events)
+        spk_counters = np.zeros(self.spike_events.shape[0])    # Track the next spike event to send for each channel
+        self.spk_counters = Var(shape=spk_counters.shape, init=spk_counters)
+
+        self.init_offset = Var(shape=(1,), init=init_offset)
+        self.virtual_time_step_interval = Var(shape=(1,), init=virtual_time_step_interval)
+
+@implements(proc=SpikeEventGen_v2, protocol=LoihiProtocol)
+@requires(CPU)
+class PySpikeEventGenModel_v2(PyLoihiProcessModel):
+    """Spike Event Generator Process implementation running on CPU (Python) Version 2
+    Args:
+    """
+    s_out: PyOutPort = LavaPyType(PyOutPort.VEC_DENSE, float)   # IT IS POSSIBLE TO SEND FLOATS AFTER ALL
+
+    '''
+    spike_events contains the time steps and the channel of each spike event.
+        Shape: (num_channels, num_events)
+    '''
+    spike_events: np.ndarray = LavaPyType(np.ndarray, object)
+    spk_counters: np.ndarray = LavaPyType(np.ndarray, object)
+    
+    init_offset: int = LavaPyType(int, int)
+    virtual_time_step_interval: int = LavaPyType(int, int)
+
+    def __init__(self, proc_params) -> None:
+        super().__init__(proc_params=proc_params)
+        # print("spike events", self.spike_events.__str__())    # TODO: Check why during initialization the variable prints the class, while during run it prints the value
+
+        # print("Spike Events: ", self.spike_events)
+        # print("spk_counters: ", self.spk_counters)
+
+    def run_spk(self) -> None:
+        spike_data = np.zeros(self.s_out.shape) # Initialize the spike data to 0
+        
+        # print("time step:", self.time_step)
+
+        # If the current simulation time is greater than a spike event, send a spike in the corresponding channel
+        currTime = self.init_offset + self.time_step*self.virtual_time_step_interval
+
+        num_input_channels = self.s_out.shape[0]    # Number of input channels
+        for ch in range(num_input_channels):
+            # Get the timestamp of the next spike event for the current channel
+            next_spike_idx = int(self.spk_counters[ch])
+            next_spike_time = -1
+            if next_spike_idx < len(self.spike_events[ch]):
+                # If the next spike event is valid, get its timestamp
+                next_spike_time = self.spike_events[ch][next_spike_idx]
+                
+                if next_spike_time <= currTime:
+                    # If the next spike event is less than the current time, the Input Layer should send a spike at this time step.
+                    spike_data[ch] = 1.0   # Send spike (value corresponds to the punctual current of the spike event)
+
+                    # Move to the next spike event
+                    self.spk_counters[ch] += 1
+
+        if np.sum(spike_data) > 0:   # Print the spike event if there are any spikes
+            VERBOSE = True
+            if VERBOSE:
+                print(f"""Sending spike event at time: {currTime}({self.time_step}) | Data: {spike_data}""")
+            #else:
+            #     print(f"Sending spike event at time: {currTime}({self.time_step}).")
+
+        self.s_out.send(spike_data)
+
+        # Print a progress message every 1000 time steps
+        if self.time_step % 1000 == 0:
+            # Clear the console
+            print(f"Time step: {self.time_step}")
