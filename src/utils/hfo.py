@@ -35,3 +35,23 @@ class BaselineAlgorithm:
     SEVENTY_PERC = "70perc"
     EIGHTY_PERC = "80perc"
     NINETY_PERC = "90perc"
+
+# HFO Detection Offsets [MIN_OFFSET, MAX_OFFSET, MEAN_OFFSET, TOLERANCE_OFFSET]
+RIPPLE_DETECTION_OFFSET = [18, 57, 37, 20]
+FR_DETECTION_OFFSET = [9, 18, 13, 5]
+BOTH_DETECTION_OFFSET = [9, 57, 33, 24]
+
+def band_to_gt_max_offset(band: MarkerType):
+    """
+    This function returns the Maximum time the SNN can take to detect the event.
+    If the band is unknown, it returns 0.
+    @band (MarkerType): The band to get the confidence window for.
+    """
+    if band == MarkerType.RIPPLE:
+        return RIPPLE_DETECTION_OFFSET[1]
+    elif band == MarkerType.FAST_RIPPLE:
+        return FR_DETECTION_OFFSET[1]
+    elif band == MarkerType.BOTH:
+        return BOTH_DETECTION_OFFSET[1]
+    else:
+        raise ValueError("Unknown band type on band_to_confidence_window()")
