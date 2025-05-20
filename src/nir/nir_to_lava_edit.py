@@ -101,8 +101,8 @@ def _nir_node_to_lava(node: nir.NIRNode, import_config: ImportConfig):
 
         # Calculate the dv and du from the time constants
         # TODO: Check if this is the relationship between dv and tau. Should it be dv = 1 - tau?
-        dv = 1 - (dt / tau_mem)
-        du = 1 - (dt / tau_syn)
+        dv = dt / tau_mem
+        du = dt / tau_syn
 
         # Get the number of neurons
         num_neurons = node.num_neurons
