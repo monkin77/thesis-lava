@@ -130,9 +130,10 @@ def _nir_node_to_lava(node: nir.NIRNode, import_config: ImportConfig):
         )
 
         # Whenever we create a LIF node, we are also creating a Dense node? TODO: Are we duplicating Dense layers then?
-        dense = Dense(weights=w)
-        dense.a_out.connect(lif.a_in)
-        return [dense, lif]
+        # dense = Dense(weights=w)
+        # dense.a_out.connect(lif.a_in)
+        # return [dense, lif]
+        return lif
 
     elif isinstance(node, nir.Affine):
         w = node.weight
