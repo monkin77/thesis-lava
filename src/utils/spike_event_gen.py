@@ -191,6 +191,6 @@ class PySpikeEventGenModel_v2(PyLoihiProcessModel):
         self.s_out.send(spike_data)
 
         # Print a progress message every 1000 time steps
-        if self.time_step % 1000 == 0:
+        if self.time_step % 10000 == 0:
             # Clear the console
             print(f"Time step: {self.time_step}")
