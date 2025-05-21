@@ -146,7 +146,7 @@ class PySpikeEventGenModel_v2(PyLoihiProcessModel):
     '''
     spike_events: np.ndarray = LavaPyType(np.ndarray, object)
     spk_counters: np.ndarray = LavaPyType(np.ndarray, object)
-    
+
     init_offset: int = LavaPyType(int, int)
     virtual_time_step_interval: int = LavaPyType(int, int)
 
@@ -159,7 +159,7 @@ class PySpikeEventGenModel_v2(PyLoihiProcessModel):
 
     def run_spk(self) -> None:
         spike_data = np.zeros(self.s_out.shape) # Initialize the spike data to 0
-        
+
         # print("time step:", self.time_step)
 
         # If the current simulation time is greater than a spike event, send a spike in the corresponding channel
@@ -173,7 +173,7 @@ class PySpikeEventGenModel_v2(PyLoihiProcessModel):
             if next_spike_idx < len(self.spike_events[ch]):
                 # If the next spike event is valid, get its timestamp
                 next_spike_time = self.spike_events[ch][next_spike_idx]
-                
+
                 if next_spike_time <= currTime:
                     # If the next spike event is less than the current time, the Input Layer should send a spike at this time step.
                     spike_data[ch] = 1.0   # Send spike (value corresponds to the punctual current of the spike event)
@@ -181,10 +181,10 @@ class PySpikeEventGenModel_v2(PyLoihiProcessModel):
                     # Move to the next spike event
                     self.spk_counters[ch] += 1
 
-        if np.sum(spike_data) > 0:   # Print the spike event if there are any spikes
-            VERBOSE = True
-            if VERBOSE:
-                print(f"""Sending spike event at time: {currTime}({self.time_step}) | Data: {spike_data}""")
+        VERBOSE = False
+        if VERBOSE and np.sum(spike_data) > 0:
+            # Print the spike event if there are any spikes
+            print(f"""Sending spike event at time: {currTime}({self.time_step}) | Data: {spike_data}""")
             #else:
             #     print(f"Sending spike event at time: {currTime}({self.time_step}).")
 

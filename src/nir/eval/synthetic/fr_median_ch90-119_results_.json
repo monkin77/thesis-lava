@@ -1,0 +1,16 @@
+{
+  "freq_band": "fr",
+  "channels": "ch90-119",
+  "num_steps": 120000,
+  "max_detection_offset": 32.0,
+  "baseline_algorithm": "median",
+  "metrics": {
+    "true_positive": 17,
+    "false_positive": 3,
+    "false_negative": 7,
+    "total_predictions": 27,
+    "precision": 0.85,
+    "recall": 0.7083333333333334,
+    "f1_score": 0.7727272727272727
+  }
+}
