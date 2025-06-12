@@ -11,6 +11,8 @@ from math import floor
 import numpy as np
 from utils.io import preview_np_array
 from typing import TypedDict
+from utils.float_to_fixed import scaling_dudv
+from lava.magma.core.model.py.model import PyLoihiProcessModel
 
 
 init_offset = 0 # 900 # 33400      #   
@@ -27,9 +29,35 @@ class HFOEvalResults(TypedDict):
     f1_score: np.float32
     total_predictions: int
 
+def float_to_fixed_process(key: str, proc: PyLoihiProcessModel, fp_scaling_factor=240):
+    """
+    Convert the process parameters to fixed-point representation.
+    This is used for LIF and FC processes.
+    """
+    if "lif" in key:
+        # Current Process is a LIF Process
+        # Scale the dv and du parameters to fixed-point representation
+        dv = scaling_dudv(proc.dv.get())    # .get() method needs to be used to get the value from the Lava Var)
+        du = scaling_dudv(proc.du.get())
+        vth = np.round(proc.vth.get() * fp_scaling_factor).astype(np.int32)
+        print(f"Scaling LIF Process {key} to Fixed-Point: dv={dv}, du={du}, vth={vth}")
+        # Update the Process with the new parameters
+        proc.dv = dv
+        proc.du = du
+        proc.vth = vth
+    elif "fc" in key:
+        # Current Process is a Fully Connected Layer
+        # Scale the Weights to fixed-point representation
+        # print(f"Previous Weights: {proc.weights}")
+        # .get() method is used to get the weights from the process since it is variable of class Lava Var
+        weights = np.round(proc.weights.get() * fp_scaling_factor).astype(np.int32)
+        print(f"Scaling FC Process {key} to Fixed-Point: weights={weights}")
+        # Update the Process with the new weights
+        proc.weights = weights
+
 def evaluate_hfo_detector(
         nir_network: nir.NIRGraph, nir_config: ImportConfig, chosen_band: MarkerType, use_refrac: bool,
-        input_spikes: np.ndarray, gt_times: np.ndarray, num_steps: int, 
+        input_spikes: np.ndarray, gt_times: np.ndarray, num_steps: int, use_fp: bool,
         eval_label: str, verbose=False) -> HFOEvalResults:
     '''
     Parameters
@@ -48,6 +76,8 @@ def evaluate_hfo_detector(
         Contains the GT times of the HFO events. Shape: (num_gt_events,)
     num_steps : int
         Number of time steps to run the network
+    use_fp : bool
+        Whether to use Fixed-Precision Computation in the network instead of Floating-Point
     eval_label : str
         Label to be used for the evaluation
     verbose : bool
@@ -149,8 +179,33 @@ def evaluate_hfo_detector(
         lava_net["fc_out"].a_out.connect(lif_out_refrac.a_in)
         lif_out = lif_out_refrac
 
+    # ========================================================================
+    # Transform the Network to use Fixed-Point Computation
+    # ========================================================================
+    if use_fp:
+        '''
+        Transform the Network to use Fixed-Point Computation
+        For LIF Layers:
+        - Convert the dv and du parameters to fixed-point representation
+        - Convert the Voltage Threshold to fixed-point representation
+        For Dense Layers:
+        - Convert the Weights to fixed-point representation
+        '''
+        print(f"\nTransforming the Network to use Fixed-Point Computation...")
+        FP_SCALING_FACTOR = 240  # Scaling factor for weights and v_th in Fixed-Point Representation
+        # Iterate over the Lava Network and convert the parameters to fixed-point representation
+        for key, proc in lava_net.items():
+            # Allow 2 levels of depth in the Network. E.g.: Nested List of Processes [Dense, LIF]
+            if isinstance(proc, list):
+                # Network Node contains multiple Processes
+                # Note: Max Depth is 2
+                for inner_key, inner_proc in enumerate(proc):
+                    float_to_fixed_process(inner_key, inner_proc, fp_scaling_factor=FP_SCALING_FACTOR)
+            else:
+                float_to_fixed_process(key, proc, fp_scaling_factor=FP_SCALING_FACTOR)
+
     if verbose:
-        print(f"LAVA Network: {lava_net}")
+        print(f"LAVA Network: {lava_net}\n\n")
 
     # ========================================================================
     # Create the Input Generator Layer and Connect it to the remaining Network

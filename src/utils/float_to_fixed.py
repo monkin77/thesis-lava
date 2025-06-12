@@ -202,7 +202,7 @@ PRECISION_DU_DV = 12
 def scaling_dudv(val):
     '''Scaling function for du, dv in LIF
     ''' 
-    assert val < 1, 'Passed value must be smaller than 1'
+    assert np.all(val < 1), 'Passed value must be smaller than 1'
     
     # return np.round(val * (2 ** PRECISION_DU_DV)).astype(np.int32)
     return np.round( val * ((2 ** PRECISION_DU_DV) - 1) ).astype(np.int32)
