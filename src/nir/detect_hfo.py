@@ -58,7 +58,7 @@ def float_to_fixed_process(key: str, proc: PyLoihiProcessModel, fp_scaling_facto
 def evaluate_hfo_detector(
         nir_network: nir.NIRGraph, nir_config: ImportConfig, chosen_band: MarkerType, use_refrac: bool,
         input_spikes: np.ndarray, gt_times: np.ndarray, num_steps: int, use_fp: bool,
-        eval_label: str, verbose=False) -> HFOEvalResults:
+        eval_label: str, verbose=False, use_bef_tolerance=False) -> HFOEvalResults:
     '''
     Parameters
     ----------
@@ -82,6 +82,9 @@ def evaluate_hfo_detector(
         Label to be used for the evaluation
     verbose : bool
         Whether to print verbose information
+    use_bef_tolerance : bool
+        Whether to include a tolerance for network spikes before the GT annotation.
+        I.e.: Consider a spike before the GT annotation as a True Positive if it is within the tolerance.
     '''
     # ========================================================================
     # Load the Lava Network from the NIR Network
@@ -140,9 +143,13 @@ def evaluate_hfo_detector(
     # in timesteps (ms) - Max time from the Insertion Timing to the GT annotation
     MAX_DETECTION_OFFSET = int(band_to_gt_max_offset(
         chosen_band)) * 1.5 + PRED_CAUSALITY_WINDOW   # in timesteps (ms)
+    PREV_DETECTION_OFFSET = 0
+    if use_bef_tolerance:
+        PREV_DETECTION_OFFSET = int(MAX_DETECTION_OFFSET * 0.1)  # 10% of the MAX_DETECTION_OFFSET
     if verbose:
         print(f"PRED_CAUSALITY_WINDOW: {PRED_CAUSALITY_WINDOW} steps")
         print(f"MAX_DETECTION_OFFSET: {MAX_DETECTION_OFFSET} ms")
+        print(f"PREV_DETECTION_OFFSET: {PREV_DETECTION_OFFSET} ms")
 
     # ========================================================================
     # Make Lava-Specific Adjustments to the Network
@@ -317,12 +324,12 @@ def evaluate_hfo_detector(
             gt_time = gt_times[curr_gt_idx]
             if verbose:
                 print(f"GT Time: {gt_time} | Spike Time: {spike_time}")
-            if spike_time < gt_time:
+            if spike_time < gt_time - PREV_DETECTION_OFFSET:
                 # This spike is before the insertion of a relevant event
                 FP += 1
                 break   # Exit the loop
-            if (spike_time - gt_time) < MAX_DETECTION_OFFSET:
-                # spike time must be >= gt_time
+            if (spike_time - gt_time) < MAX_DETECTION_OFFSET or ((gt_time - spike_time) < PREV_DETECTION_OFFSET):
+                # spike time must be >= gt_time - PREV_DETECTION_OFFSET 
                 TP += 1
                 curr_gt_idx += 1
                 break   # Exit the loop
@@ -335,6 +342,13 @@ def evaluate_hfo_detector(
         else:
             # No more GT events, so every spike is a false positive
             FP += 1
+    
+    # If there are any remaining GT events, they are false negatives
+    if curr_gt_idx < len(gt_times):
+        remaining_gt_events = len(gt_times) - curr_gt_idx
+        FN += remaining_gt_events
+        if verbose:
+            print(f"Remaining GT Events: {remaining_gt_events}")
 
     # Show the Confusion Matrix
     print(f"Confusion Matrix:")

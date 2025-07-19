@@ -1,0 +1,15 @@
+{
+  "freq_band": "ripple",
+  "channels": "ch90-119",
+  "max_detection_offset": 90.5,
+  "baseline_algorithm": "median",
+  "metrics": {
+    "true_positive": 694,
+    "false_positive": 100,
+    "false_negative": 25,
+    "total_predictions": 819,
+    "precision": 0.8740554156171285,
+    "recall": 0.9652294853963839,
+    "f1_score": 0.9173826834104428
+  }
+}
